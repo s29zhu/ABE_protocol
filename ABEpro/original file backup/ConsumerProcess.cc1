@@ -1,0 +1,370 @@
+/*
+ * ConsumerProcess.cc
+ *
+ *  Created on: Aug 22, 2011
+ *      Author: anuchart
+ */
+
+#include "UCACPacket_m.h"
+
+#define STACKSIZE 16384
+
+class ConsumerProcess : public cSimpleModule
+{
+  public:
+    ConsumerProcess() : cSimpleModule(STACKSIZE) {}
+    virtual void activity();
+};
+
+Define_Module( ConsumerProcess );
+
+void ConsumerProcess::activity()
+{
+    // retrieve parent's parameters
+	cModule *parentMod = getParentModule();
+    //simtime_t timeout = parentMod->par("timeout");
+    cPar& respCompTime = parentMod->par("respTime");
+    cPar& queryIaTime = parentMod->par("queryIaTime");
+    cPar& numQuery = parentMod->par("numQuery");
+
+    // retrieve parent's out gate
+    cGate *parentOutGate = parentMod->gate("port$o");
+
+    // assign server address: index of Switch's gate to which servers are connected
+    int maxIndex = parentOutGate->getNextGate()->size()-1;
+    int consumerAddr = maxIndex-3; WATCH(consumerAddr);
+    int masterAddr = maxIndex-2; WATCH(masterAddr);
+    int attributeAddr = maxIndex-1; WATCH(attributeAddr);
+    int resourceAddr = maxIndex; WATCH(resourceAddr);
+
+    // assign myself address and process ID
+    int myAddr = consumerAddr; WATCH(myAddr);
+    int myProcId = getId(); WATCH(myProcId);
+
+    // connection information for client side
+    int clientAddr = 0; WATCH(clientAddr);
+    //int clientProcId = 0; WATCH(clientProcId);
+
+    // connection information for server side
+    int attributeProcId = 0; WATCH(attributeProcId);
+    int resourceProcId = 0; WATCH(resourceProcId);
+
+    UCACPacket *connReq, *connAck, *discReq, *discAck;
+    UCACPacket *sendPkt, *recvPkt;
+
+    UCACPacket *pk;
+
+    // declaration for file transfer
+    int actNumQuery=0; WATCH(actNumQuery);
+    int i=0; WATCH(i);
+    UCACDataPacket *query, *answer;
+
+    // receive the CONN_REQ we were created to handle
+    pk = (UCACPacket *) receive();
+    if (pk->getKind()==CONN_REQ) {
+    	EV << "consumerProc ID = " << myProcId << " got CONN_REQ\n";
+        //retrieve client addresses and process ID
+        clientAddr = pk->getSrcAddress();
+        //clientProcId = pk->getSrcProcId();
+    }
+    else
+       	error("consumerProc: connect protocol error!");
+
+    // set the module name to something informative
+    char buf[30];
+    sprintf(buf, "consumerProc%d-clientAddr%d", myProcId, clientAddr);
+    setName(buf);
+
+    // respond with CONN_ACK
+    pk->setName("CONN_ACK");
+    pk->setKind(CONN_ACK);
+    pk->setSrcAddress(myAddr);
+    pk->setDestAddress(clientAddr);
+    pk->setSrcProcId(myProcId);
+    sendDirect(pk, parentOutGate);
+    EV << "consumerProc: sent CONN_ACK to client addr = " << clientAddr << endl;
+
+    // waiting for print request from owner
+    recvPkt = (UCACPacket *) receive();
+    if (recvPkt->getKind()==PRNT_REQ) {
+    	EV << "consumerProc: got print request\n";
+		delete recvPkt;
+    }
+	else
+		error("consumerProc: print protocol error!");
+
+	//
+	// setup connecting to resource loop-1
+	//
+	for(;;) {
+		// connection setup
+		connReq = new UCACPacket("CONN_REQ", CONN_REQ);
+		connReq->setSrcAddress(myAddr);
+		connReq->setDestAddress(resourceAddr);
+		connReq->setSrcProcId(myProcId);
+		sendDirect( connReq, parentOutGate );
+		EV << "consumerProc: sent CONN_REQ\n";
+
+		// waiting for CONN_ACK
+		//connAck = (UCACPacket *) receive(timeout);
+		connAck = (UCACPacket *) receive();
+
+		//if (connAck==NULL)
+		//	goto brokenResc1;
+
+		if (connAck->getKind()==CONN_ACK) {
+			// retrieve server process ID
+			resourceProcId = connAck->getSrcProcId();
+			EV << "consumerProc: got CONN_ACK from resource process ID = " << resourceProcId << endl;
+			delete connAck;
+		}
+		else
+			error("cunsumerProc: connect protocol error!");
+
+		// request a file by sending file location to resource
+		sendPkt = new UCACPacket("FILE_REQ", FILE_REQ);
+		sendPkt->setSrcAddress(myAddr);
+		sendPkt->setDestAddress(resourceAddr);
+		sendPkt->setSrcProcId(myProcId);
+		sendPkt->setDestProcId(resourceProcId);
+		sendDirect(sendPkt, parentOutGate);
+		EV << "consumerProc: 1 sent File Request\n";
+
+		//waiting for challenge and policy from resource
+		//recvPkt = (UCACPacket *) receive(timeout);
+		recvPkt = (UCACPacket *) receive();
+
+		//if (recvPkt==NULL)
+		//	goto brokenResc1;
+
+		if (recvPkt->getKind()==CHALLENG) {
+			EV << "consumerProc: got Challenge\n";
+			delete recvPkt;
+			break;
+		}
+		else
+			error("cconsumerProc: challenge protocol error!");
+
+    // timeout handing
+	//brokenResc1:
+	//	EV << "consumerProc: Timeout since resource connection broken!\n";
+	//	if (ev.isGUI()) bubble("Connection broken!");
+	}
+	//
+	// end connecting to resource loop-1
+	//
+
+	// redirecting user-agent from consumer to master by AUTZ_REQ
+	sendPkt = new UCACPacket("AUTZ_REQ", AUTZ_REQ);
+	sendPkt->setSrcAddress(myAddr);
+	sendPkt->setDestAddress(clientAddr);
+	sendPkt->setSrcProcId(myProcId);
+	sendDirect( sendPkt, parentOutGate );
+   	EV << "consumerProc: 3 redirect with Authorize request\n";
+
+   	//
+   	// owner is connecting to master
+   	//
+
+	// waiting for AUTZ_RES from owner
+   	recvPkt = (UCACPacket *) receive();
+
+	if (recvPkt->getKind()==AUTZ_RES) {
+		EV << "consumerProc: got Authorize Response\n";
+		delete recvPkt;
+	}
+	else
+		error("consumerProc: authorize protocol error!");
+
+	// waiting for confined set-1, descriptive set-1, owner private-key from owner
+	recvPkt = (UCACPacket *) receive();
+
+	if (recvPkt->getKind()==OWNER_SK) {
+		EV << "consumerProc: got Owner Private-key\n";
+		delete recvPkt;
+	}
+	else
+		error("consumerProc: owner private-key protocol error!");
+
+	//
+	// setup connection to attribute
+	//
+	for(;;) {
+		// connection setup
+		connReq = new UCACPacket("CONN_REQ", CONN_REQ);
+		connReq->setSrcAddress(myAddr);
+		connReq->setDestAddress(attributeAddr);
+		connReq->setSrcProcId(myProcId);
+		sendDirect( connReq, parentOutGate );
+		EV << "consumerProc: sent CONN_REQ\n";
+
+		// waiting for CONN_ACK
+		//connAck = (UCACPacket *) receive(timeout);
+		connAck = (UCACPacket *) receive();
+
+		//if (connAck==NULL)
+		//	goto brokenAttr;
+
+		if (connAck->getKind()==CONN_ACK) {
+			// retrieve server process ID
+			attributeProcId = connAck->getSrcProcId();
+			EV << "consumerProc: got CONN_ACK from attribute process ID = " << resourceProcId << endl;
+			delete connAck;
+		}
+		else
+			error("consumerProc: connect protocol error!");
+
+		// request a Descriptive set-2 by sending credential, Authorize code, URI redirect to attribute
+		sendPkt = new UCACPacket("DES2_REQ", DES2_REQ);
+		sendPkt->setSrcAddress(myAddr);
+		sendPkt->setDestAddress(attributeAddr);
+		sendPkt->setSrcProcId(myProcId);
+		sendPkt->setDestProcId(attributeProcId);
+		sendDirect(sendPkt, parentOutGate);
+		EV << "consumerProc: 9.1 sent Descriptive Set-2 Request\n";
+
+		//waiting for descriptive set-2 from attribute
+		//recvPkt = (UCACPacket *) receive(timeout);
+		recvPkt = (UCACPacket *) receive();
+
+		//if (recvPkt==NULL)
+		//	goto brokenAttr;
+
+		if (recvPkt->getKind()==DES2_RES) {
+			EV << "consumerProc: got Descriptive Set-2\n";
+			delete recvPkt;
+		}
+		else
+			error("consumerProc: Descriptive Set-2 protocol error!");
+
+		// connection tear down
+		discReq = new UCACPacket("DISC_REQ", DISC_REQ);
+		discReq->setSrcAddress(myAddr);
+		discReq->setDestAddress(attributeAddr);
+		discReq->setSrcProcId(myProcId);
+		discReq->setDestProcId(attributeProcId);
+		sendDirect(discReq, parentOutGate);
+		EV << "consumerProc: sent DISC_REQ\n";
+
+		//EV << "waiting for DISC_ACK\n";
+		//discAck = (UCACPacket *) receive(timeout);
+		discAck = (UCACPacket *) receive();
+
+		//if (discAck==NULL)
+   		//goto brokenAttr;
+
+		if (discAck->getKind()==DISC_ACK) {
+			EV << "consumerProc: got DISC_ACK\n";
+			delete discAck;
+			break;
+		}
+		else
+			error("consumerProc: disconnect protocol error!");
+
+    // timeout handing
+	//brokenAttr:
+	//	EV << "consumerProc: Timeout since attribute connection broken!\n";
+	//	if (ev.isGUI()) bubble("Connection broken!");
+	}
+	//
+	// end connecting to attribute
+	//
+
+	//
+	// setup connecting to resource loop-2
+	//
+	for(;;) {
+		// send response to resource
+		EV << "consumerProc: Computing exponentiation and pairing for response\n";
+		wait( (double)respCompTime );
+
+		sendPkt = new UCACPacket("RESPONSE", RESPONSE);
+		sendPkt->setSrcAddress(myAddr);
+		sendPkt->setDestAddress(resourceAddr);
+		sendPkt->setSrcProcId(myProcId);
+		sendPkt->setDestProcId(resourceProcId);
+		sendDirect(sendPkt, parentOutGate);
+		EV << "consumerProc: 10 reply with Response\n";
+
+		// data query until end of file
+		actNumQuery = (long)numQuery;
+		for (i=0; i<actNumQuery; i++) {
+			query = new UCACDataPacket("DATA(query)", DATA);
+			query->setSrcAddress(myAddr);
+			query->setDestAddress(resourceAddr);
+			query->setSrcProcId(myProcId);
+			query->setDestProcId(resourceProcId);
+			query->setPayload("query");
+			sendDirect(query, parentOutGate);
+			EV << "consumerProc: sent DATA(query)\n";
+
+			//EV << "waiting for DATA(result)\n";
+			//answer = (UCACDataPacket *) receive(timeout);
+			answer = (UCACDataPacket *) receive();
+
+			//if (answer==NULL)
+			//	goto brokenResc2;
+
+			EV << "consumerProc: got DATA(result)\n";
+			delete answer;
+			wait( (double)queryIaTime );
+		}
+
+		// connection tear down
+		discReq = new UCACPacket("DISC_REQ", DISC_REQ);
+		discReq->setSrcAddress(myAddr);
+		discReq->setDestAddress(resourceAddr);
+		discReq->setSrcProcId(myProcId);
+		discReq->setDestProcId(resourceProcId);
+		sendDirect(discReq, parentOutGate);
+		EV << "consumerProc: sent DISC_REQ\n";
+
+		//EV << "waiting for DISC_ACK\n";
+		//discAck = (UCACPacket *) receive(timeout);
+		discAck = (UCACPacket *) receive();
+
+		//if (discAck==NULL)
+		//	goto brokenResc2;
+
+		if (discAck->getKind()==DISC_ACK) {
+			EV << "consumerProc: got DISC_ACK\n";
+			delete discAck;
+			break;
+		}
+		else
+			error("consumerProc: disconnect protocol error!");
+
+	// timeout handing
+	//brokenResc2:
+	//	EV << "cosumerProc: Timeout since resource connection broken!\n";
+	//	if (ev.isGUI()) bubble("Connection broken!");
+	}
+	//
+	// end connecting to resource loop-2
+	//
+
+	// send print response to owner
+	sendPkt = new UCACPacket("PRNT_RES", PRNT_RES);
+	sendPkt->setSrcAddress(myAddr);
+	sendPkt->setDestAddress(clientAddr);
+	sendPkt->setSrcProcId(myProcId);
+	sendDirect(sendPkt, parentOutGate);
+	EV << "consumerProc: 11 reply with Print Response\n";
+
+    // wait for DISC_REQ before tear down
+    pk = (UCACPacket *) receive();
+    if (pk->getKind()==DISC_REQ) {
+    	EV << "consumerProc: got DISC_REQ\n";
+    	// connection tear down in response to DISC_REQ
+    	pk->setName("DISC_ACK");
+    	pk->setKind(DISC_ACK);
+    	pk->setSrcAddress(myAddr);
+    	pk->setDestAddress(clientAddr);
+    	pk->setSrcProcId(myProcId);
+    	sendDirect(pk, parentOutGate);
+    	EV << "consumerProc: sent DISC_ACK and delete module itself\n";
+    	deleteModule();
+    }
+    else
+        error("consumerProc: disconnect protocol error!");
+}

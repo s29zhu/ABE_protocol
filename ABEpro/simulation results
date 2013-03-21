@@ -1,0 +1,99 @@
+Initializing channel UCACnet.owner[0].port$o.channel, stage 0
+Initializing channel UCACnet.consumer.port$o.channel, stage 0
+Initializing channel UCACnet.master.port$o.channel, stage 0
+Initializing channel UCACnet.attribute.port$o.channel, stage 0
+Initializing channel UCACnet.resource.port$o.channel, stage 0
+Initializing channel UCACnet.cloud.port$o[0].channel, stage 0
+Initializing channel UCACnet.cloud.port$o[1].channel, stage 0
+Initializing channel UCACnet.cloud.port$o[2].channel, stage 0
+Initializing channel UCACnet.cloud.port$o[3].channel, stage 0
+Initializing channel UCACnet.cloud.port$o[4].channel, stage 0
+Initializing module UCACnet, stage 0
+Initializing module UCACnet.owner[0], stage 0
+Initializing module UCACnet.consumer, stage 0
+Initializing module UCACnet.master, stage 0
+master process module founded
+Initializing module UCACnet.attribute, stage 0
+Initializing module UCACnet.resource, stage 0
+Initializing module UCACnet.cloud, stage 0
+** Event #1  T=0.02  UCACnet.cloud (Cloud, id=7), on `{connection request from owner to consumer}' (UCACPacket, id=0)
+cloud: Relaying msg to addr = 1
+** Event #2  T=0.025  UCACnet.consumer (Consumer, id=3), on `{connection request from owner to consumer}' (UCACPacket, id=0)
+consumer got conn_req packet from owner
+Initializing module UCACnet.consumer.consumerProc, stage 0
+CONN_REQ: Consumer created process ID = 8
+** Event #3  T=0.025  UCACnet.consumer.consumerProc (ConsumerProcess, id=8), on `{connection request from owner to consumer}' (UCACPacket, id=0)
+consumer process got conn_req packet from owner
+consumerProc8clientAddr0
+inside consumer process source address1
+consumerProc: sent CONN_ACK to client addr = 0
+** Event #4  T=0.03  UCACnet.cloud (Cloud, id=7), on `{connect ack}' (UCACPacket, id=1)
+cloud: Relaying msg to addr = 0
+** Event #5  T=0.05  UCACnet.owner[0] (Owner, id=2), on `{connect ack}' (UCACPacket, id=1)
+owner get consumer conn_ack packet
+owner send consumer print request
+** Event #6  T=0.07  UCACnet.cloud (Cloud, id=7), on `{owner send to consumer print request}' (UCACPacket, id=2)
+cloud: Relaying msg to addr = 1
+** Event #7  T=0.075  UCACnet.consumer (Consumer, id=3), on `{owner send to consumer print request}' (UCACPacket, id=2)
+Consumer is redirecting msg to process ID = 8
+** Event #8  T=0.075  UCACnet.consumer.consumerProc8-clientAddr0 (ConsumerProcess, id=8), on `{owner send to consumer print request}' (UCACPacket, id=2)
+consumerProc: sent REDIRECT to client addr = 0
+** Event #9  T=0.08  UCACnet.cloud (Cloud, id=7), on `{consumer direct owner to authorizer}' (UCACRedirectPacket, id=3)
+cloud: Relaying msg to addr = 0
+** Event #10  T=0.1  UCACnet.owner[0] (Owner, id=2), on `{consumer direct owner to authorizer}' (UCACRedirectPacket, id=3)
+** Event #11  T=0.12  UCACnet.cloud (Cloud, id=7), on `{owner redirect the consumer redirect info to authorizer}' (UCACRedirectPacket, id=3)
+cloud: Relaying msg to addr = 2
+** Event #12  T=0.125  UCACnet.master (Master, id=4), on `{owner redirect the consumer redirect info to authorizer}' (UCACRedirectPacket, id=3)
+master got conn_req packet from owner
+Initializing module UCACnet.master.masterProc, stage 0
+CONN_REQ: Master created process ID = 9
+** Event #13  T=0.125  UCACnet.master.masterProc (MasterProcess, id=9), on `{owner redirect the consumer redirect info to authorizer}' (UCACRedirectPacket, id=3)
+** Event #14  T=0.13  UCACnet.cloud (Cloud, id=7), on `{master process response ack to owner}' (UCACPacket, id=5)
+cloud: Relaying msg to addr = 0
+** Event #15  T=0.13  UCACnet.cloud (Cloud, id=7), on `{connection request from master to authority}' (UCACPacket, id=6)
+cloud: Relaying msg to addr = 3
+** Event #16  T=0.135  UCACnet.attribute (Attribute, id=5), on `{connection request from master to authority}' (UCACPacket, id=6)
+Initializing module UCACnet.attribute.attributeProc, stage 0
+CONN_REQ: Attribute created process ID = 10
+** Event #17  T=0.135  UCACnet.attribute.attributeProc (AttributeProcess, id=10), on `{connection request from master to authority}' (UCACPacket, id=6)
+** Event #18  T=0.14  UCACnet.cloud (Cloud, id=7), on `{authority response ack to authorizer}' (UCACPacket, id=7)
+cloud: Relaying msg to addr = 2
+** Event #19  T=0.145  UCACnet.master (Master, id=4), on `{authority response ack to authorizer}' (UCACPacket, id=7)
+Master is redirecting msg to process ID = 9
+** Event #20  T=0.145  UCACnet.master.masterProc (MasterProcess, id=9), on `{authority response ack to authorizer}' (UCACPacket, id=7)
+** Event #21  T=0.15  UCACnet.owner[0] (Owner, id=2), on `{master process response ack to owner}' (UCACPacket, id=5)
+** Event #22  T=0.15  UCACnet.cloud (Cloud, id=7), on `{request DES part1 from authority}' (UCACRedirectDesPacket, id=8)
+cloud: Relaying msg to addr = 3
+** Event #23  T=0.155  UCACnet.attribute (Attribute, id=5), on `{request DES part1 from authority}' (UCACRedirectDesPacket, id=8)
+Attribute is redirecting msg to process ID = 10
+** Event #24  T=0.155  UCACnet.attribute.attributeProc (AttributeProcess, id=10), on `{request DES part1 from authority}' (UCACRedirectDesPacket, id=8)
+** Event #25  T=0.16  UCACnet.cloud (Cloud, id=7), on `{descriptive part from authority}' (UCACTokenPacket, id=10)
+cloud: Relaying msg to addr = 2
+** Event #26  T=0.165  UCACnet.master (Master, id=4), on `{descriptive part from authority}' (UCACTokenPacket, id=10)
+Master is redirecting msg to process ID = 9
+** Event #27  T=0.165  UCACnet.master.masterProc (MasterProcess, id=9), on `{descriptive part from authority}' (UCACTokenPacket, id=10)
+** Event #28  T=0.17  UCACnet.cloud (Cloud, id=7), on `{owner authenticate itself to authorizer}' (UCACAuthenticatePacket, id=9)
+cloud: Relaying msg to addr = 2
+** Event #29  T=0.17  UCACnet.cloud (Cloud, id=7), on `{master response back for receiving descriptive part}' (UCACPacket, id=12)
+cloud: Relaying msg to addr = 3
+** Event #30  T=0.175  UCACnet.master (Master, id=4), on `{owner authenticate itself to authorizer}' (UCACAuthenticatePacket, id=9)
+Master is redirecting msg to process ID = 9
+** Event #31  T=0.175  UCACnet.attribute (Attribute, id=5), on `{master response back for receiving descriptive part}' (UCACPacket, id=12)
+Attribute is redirecting msg to process ID = 10
+** Event #32  T=0.175  UCACnet.master.masterProc (MasterProcess, id=9), on `{owner authenticate itself to authorizer}' (UCACAuthenticatePacket, id=9)
+** Event #33  T=0.175  UCACnet.attribute.attributeProc (AttributeProcess, id=10), on `{master response back for receiving descriptive part}' (UCACPacket, id=12)
+** Event #34  T=0.18  UCACnet.cloud (Cloud, id=7), on `{authenticated successful}' (UCACPacket, id=13)
+cloud: Relaying msg to addr = 0
+** Event #35  T=0.2  UCACnet.owner[0] (Owner, id=2), on `{authenticated successful}' (UCACPacket, id=13)
+** Event #36  T=0.22  UCACnet.cloud (Cloud, id=7), on `{owner send out confined attr to master}' (UCACAttrPacket, id=14)
+cloud: Relaying msg to addr = 2
+** Event #37  T=0.225  UCACnet.master (Master, id=4), on `{owner send out confined attr to master}' (UCACAttrPacket, id=14)
+Master is redirecting msg to process ID = 9
+** Event #38  T=0.225  UCACnet.master.masterProc (MasterProcess, id=9), on `{owner send out confined attr to master}' (UCACAttrPacket, id=14)
+** Event #39  T=0.23  UCACnet.cloud (Cloud, id=7), on `{master response of owner confined attr}' (UCACTokenPacket, id=11)
+cloud: Relaying msg to addr = 0
+** Event #40  T=0.25  UCACnet.owner[0] (Owner, id=2), on `{master response of owner confined attr}' (UCACTokenPacket, id=11)
+<!> No more events -- simulation ended at event #41, t=0.25.
+** Calling finish() methods of modules
+
+

@@ -1,0 +1,77 @@
+/*
+ * Attribute.cc
+ *
+ *  Created on: Aug 8, 2011
+ *      Author: anuchart
+ */
+
+#include "UCACPacket_m.h"
+
+class Attribute : public cSimpleModule
+{
+  private:
+    cModuleType *srvProcType;
+    pairing_t pairing;
+    element_t g;
+    int consumerAddr;
+    int masterAddr;
+    int attributeAddr;
+    int resourceAddr;
+  protected:
+    virtual void initialize();
+    virtual void handleMessage(cMessage *msg);
+};
+
+Define_Module(Attribute);
+
+
+void Attribute::initialize()
+{
+    //find the AttributeProcess
+    srvProcType = cModuleType::find("AttributeProcess");
+/*    UCACPacket *starter = new UCACPacket("attribute start message", 100);
+    simtime_t current_time = simTime();
+    scheduleAt(current_time + 0.22, starter);*/
+    int maxIndex = gate("port$o")->getNextGate()->size()-1;
+    consumerAddr = maxIndex-3; WATCH(consumerAddr);
+    masterAddr = maxIndex-2; WATCH(masterAddr);
+    attributeAddr = maxIndex-1; WATCH(attributeAddr);
+    resourceAddr = maxIndex; WATCH(resourceAddr);
+}
+
+void Attribute::handleMessage(cMessage *msg)
+{
+    UCACPacket *m = check_and_cast<UCACPacket *>(msg);
+    if(msg->isSelfMessage()){
+        EV<<" authority caught selfmessage\n";
+        delete msg;
+    }
+    // if receive connection request, create a new process (module)
+    if (m->getKind()==CONN_REQ )
+    {
+        if(m->getSrcAddress() == consumerAddr){
+            cModule *mod = simulation.getModule(m->getDestProcId());
+            sendDirect(m, mod, "in");
+        }else{
+        //create one AttributeProcess module to interact with the requested module
+        cModule *mod = srvProcType->createScheduleInit("attributeProc",this);
+        EV << "CONN_REQ: Attribute created process ID = " << mod->getId() << endl;
+        sendDirect(m, mod, "in");
+        }
+    }
+    else
+    // otherwise the process has already created, so redirect to that process.
+    {
+        int serverProcId = m->getDestProcId();
+        EV << "Attribute is redirecting msg to process ID = " << serverProcId << endl;
+        cModule *mod = simulation.getModule(serverProcId);
+        // unless cannot find the destination process, destroy the packet
+        if (!mod) {
+            EV << " That process already exited, deleting msg\n";
+            delete m;
+        } else {
+            sendDirect(m, mod, "in");
+        }
+    }
+}
+

@@ -1,0 +1,22 @@
+file 10773 1327939188                                           
+version 2
+run Single-0-20110902-16:19:12-6321
+attr configname Single
+attr datetime 20110902-16:19:12
+attr experiment Single
+attr inifile /home/anuchart/simulation/UCAC/crypto.ini
+attr iterationvars ""
+attr iterationvars2 $repetition=0
+attr measurement ""
+attr network UCACnet
+attr processid 6321
+attr repetition 0
+attr replication #0
+attr resultdir results
+attr runnumber 0
+attr seedset 0
+vector 0  UCACnet.owner[0]  latency:vector  ETV
+attr interpolationmode none
+attr title "Latency time of file print, vector"
+attr unit s
+0	529 10244 171 44777 40.477151209387 10858.043447167135 247 24.086084809976 49.939973601535 8110.3375160443 272492.47813615

@@ -1,0 +1,10 @@
+roles' names in the project are different from the paper. Here is a table that match them out.
+
+project names		paper names
+owner			owner
+consumer		consumer
+master			authorizer
+attribute		authority
+resource		cloud server that stores the data
+cloud 			network
+

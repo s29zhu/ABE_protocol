@@ -1,0 +1,167 @@
+version 2
+run Small-0-20110902-21:03:14-6697
+attr configname Small
+attr datetime 20110902-21:03:14
+attr experiment Small
+attr inifile /home/anuchart/simulation/UCAC/crypto.ini
+attr iterationvars ""
+attr iterationvars2 $repetition=0
+attr measurement ""
+attr network UCACnet
+attr processid 6697
+attr repetition 0
+attr replication #0
+attr resultdir results
+attr runnumber 0
+attr seedset 0
+
+scalar UCACnet.owner[0] 	latency:timeavg 	20.273169304113
+attr interpolationmode  none
+attr title  "Latency time of file print, timeavg"
+attr unit  s
+statistic UCACnet.owner[0] 	latency:stats
+field count 10
+field mean 20.359397717946
+field stddev 2.5767150322262
+field sum 203.59397717946
+field sqrsum 4204.8058975906
+field min 16.049114334377
+field max 24.329986276884
+attr interpolationmode  none
+attr title  "Latency time of file print, stats"
+attr unit  s
+scalar UCACnet.owner[1] 	latency:timeavg 	20.344045630127
+attr interpolationmode  none
+attr title  "Latency time of file print, timeavg"
+attr unit  s
+statistic UCACnet.owner[1] 	latency:stats
+field count 12
+field mean 19.974824741564
+field stddev 2.6595326506616
+field sum 239.69789689876
+field sqrsum 4865.7277345935
+field min 13.170690400063
+field max 23.008286203004
+attr interpolationmode  none
+attr title  "Latency time of file print, stats"
+attr unit  s
+scalar UCACnet.owner[2] 	latency:timeavg 	20.757665475106
+attr interpolationmode  none
+attr title  "Latency time of file print, timeavg"
+attr unit  s
+statistic UCACnet.owner[2] 	latency:stats
+field count 9
+field mean 20.381966277639
+field stddev 2.3519471317227
+field sum 183.43769649875
+field sqrsum 3783.0741865688
+field min 16.90255204161
+field max 23.917933032592
+attr interpolationmode  none
+attr title  "Latency time of file print, stats"
+attr unit  s
+scalar UCACnet.owner[3] 	latency:timeavg 	18.788718588485
+attr interpolationmode  none
+attr title  "Latency time of file print, timeavg"
+attr unit  s
+statistic UCACnet.owner[3] 	latency:stats
+field count 11
+field mean 19.429816295004
+field stddev 4.0994477883618
+field sum 213.72797924504
+field sqrsum 4320.7500955285
+field min 12.894446586767
+field max 25.610314307732
+attr interpolationmode  none
+attr title  "Latency time of file print, stats"
+attr unit  s
+scalar UCACnet.owner[4] 	latency:timeavg 	18.473647781499
+attr interpolationmode  none
+attr title  "Latency time of file print, timeavg"
+attr unit  s
+statistic UCACnet.owner[4] 	latency:stats
+field count 10
+field mean 18.540756971012
+field stddev 4.5597719737514
+field sum 185.40756971012
+field sqrsum 3624.7203746547
+field min 11.860439311673
+field max 23.811671695058
+attr interpolationmode  none
+attr title  "Latency time of file print, stats"
+attr unit  s
+scalar UCACnet.owner[5] 	latency:timeavg 	19.649501932203
+attr interpolationmode  none
+attr title  "Latency time of file print, timeavg"
+attr unit  s
+statistic UCACnet.owner[5] 	latency:stats
+field count 12
+field mean 18.747294160031
+field stddev 4.5163452930293
+field sum 224.96752992038
+field sqrsum 4441.9035827376
+field min 11.640379479913
+field max 25.947219726804
+attr interpolationmode  none
+attr title  "Latency time of file print, stats"
+attr unit  s
+scalar UCACnet.owner[6] 	latency:timeavg 	21.406305083355
+attr interpolationmode  none
+attr title  "Latency time of file print, timeavg"
+attr unit  s
+statistic UCACnet.owner[6] 	latency:stats
+field count 10
+field mean 20.830287484772
+field stddev 2.2785723517242
+field sum 208.30287484772
+field sqrsum 4385.7357946409
+field min 17.844377135856
+field max 25.85078507541
+attr interpolationmode  none
+attr title  "Latency time of file print, stats"
+attr unit  s
+scalar UCACnet.owner[7] 	latency:timeavg 	18.654743283834
+attr interpolationmode  none
+attr title  "Latency time of file print, timeavg"
+attr unit  s
+statistic UCACnet.owner[7] 	latency:stats
+field count 11
+field mean 19.339345561294
+field stddev 3.7843974268562
+field sum 212.73280117423
+field sqrsum 4257.3297929744
+field min 10.958232759382
+field max 23.354266737648
+attr interpolationmode  none
+attr title  "Latency time of file print, stats"
+attr unit  s
+scalar UCACnet.owner[8] 	latency:timeavg 	19.448267397378
+attr interpolationmode  none
+attr title  "Latency time of file print, timeavg"
+attr unit  s
+statistic UCACnet.owner[8] 	latency:stats
+field count 11
+field mean 19.565392378297
+field stddev 3.3659559173119
+field sum 215.21931616126
+field sqrsum 4324.1469604567
+field min 13.000084809874
+field max 22.686379782142
+attr interpolationmode  none
+attr title  "Latency time of file print, stats"
+attr unit  s
+scalar UCACnet.owner[9] 	latency:timeavg 	20.291697961605
+attr interpolationmode  none
+attr title  "Latency time of file print, timeavg"
+attr unit  s
+statistic UCACnet.owner[9] 	latency:stats
+field count 11
+field mean 20.385437138578
+field stddev 4.0980722665702
+field sum 224.23980852436
+field sqrsum 4739.1684836606
+field min 11.768250763427
+field max 24.847098153379
+attr interpolationmode  none
+attr title  "Latency time of file print, stats"
+attr unit  s

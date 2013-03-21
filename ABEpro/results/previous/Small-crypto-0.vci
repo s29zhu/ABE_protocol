@@ -1,0 +1,67 @@
+file 10612 1327939188                                           
+version 2
+run Small-0-20110902-17:31:45-6468
+attr configname Small
+attr datetime 20110902-17:31:45
+attr experiment Small
+attr inifile /home/anuchart/simulation/UCAC/crypto.ini
+attr iterationvars ""
+attr iterationvars2 $repetition=0
+attr measurement ""
+attr network UCACnet
+attr processid 6468
+attr repetition 0
+attr replication #0
+attr resultdir results
+attr runnumber 0
+attr seedset 0
+vector 8  UCACnet.owner[8]  latency:vector  ETV
+attr interpolationmode none
+attr title "Latency time of file print, vector"
+attr unit s
+8	8757 928 321 38927 10.405344733127 629.017817591067 23 4.894859866424 30.169555079249 426.09800536479 8743.613289866
+vector 0  UCACnet.owner[0]  latency:vector  ETV
+attr interpolationmode none
+attr title "Latency time of file print, vector"
+attr unit s
+0	1777 886 1374 37719 27.072011399627 608.837956455761 22 7.39793567099 27.639233784612 398.79243284431 7811.3476479569
+vector 4  UCACnet.owner[4]  latency:vector  ETV
+attr interpolationmode none
+attr title "Latency time of file print, vector"
+attr unit s
+4	5086 1009 1389 39204 27.338678066291 633.351150924357 25 8.18339531899 26.617170870883 426.78489974893 7848.5871374602
+vector 6  UCACnet.owner[6]  latency:vector  ETV
+attr interpolationmode none
+attr title "Latency time of file print, vector"
+attr unit s
+6	6978 849 1438 40321 28.138678066283 651.084484257513 21 11.986112494891 31.327085691566 418.22803347755 8899.6216623264
+vector 1  UCACnet.owner[1]  latency:vector  ETV
+attr interpolationmode none
+attr title "Latency time of file print, vector"
+attr unit s
+1	2663 810 1576 39397 30.338678066261 636.484484257659 20 5.829654376675 29.154002755585 372.55215589316 7637.1952503876
+vector 3  UCACnet.owner[3]  latency:vector  ETV
+attr interpolationmode none
+attr title "Latency time of file print, vector"
+attr unit s
+3	4362 724 2041 37562 37.691353272855 605.493591959081 18 8.710269272741 35.5964001661 389.87807602432 9275.2037917188
+vector 9  UCACnet.owner[9]  latency:vector  ETV
+attr interpolationmode none
+attr title "Latency time of file print, vector"
+attr unit s
+9	9685 927 2090 37405 38.629290411249 602.893587689107 23 11.122175342582 28.859226147316 451.01308019526 9336.9866904617
+vector 7  UCACnet.owner[7]  latency:vector  ETV
+attr interpolationmode none
+attr title "Latency time of file print, vector"
+attr unit s
+7	7827 930 2093 39220 38.695957077915 633.617817591021 23 12.172994781223 26.260265629292 418.07852478852 7984.3443603433
+vector 2  UCACnet.owner[2]  latency:vector  ETV
+attr interpolationmode none
+attr title "Latency time of file print, vector"
+attr unit s
+2	3473 889 2118 40143 39.162623744577 648.151150924209 22 10.013501185708 28.774418351618 410.36699158565 8214.0858536506
+vector 5  UCACnet.owner[5]  latency:vector  ETV
+attr interpolationmode none
+attr title "Latency time of file print, vector"
+attr unit s
+5	6095 883 2144 39554 40.194185688861 639.017817590967 22 8.019413873254 29.344052257933 390.74227052062 7715.3691625731

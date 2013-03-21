@@ -1,0 +1,151 @@
+/*
+ * ResourceProcess.cc
+ *
+ *  Created on: Aug 23, 2011
+ *      Author: anuchart
+ */
+
+#include "UCACPacket_m.h"
+
+#define STACKSIZE 16384
+
+class ResourceProcess : public cSimpleModule
+{
+  public:
+    ResourceProcess() : cSimpleModule(STACKSIZE) {}
+    virtual void activity();
+};
+
+Define_Module( ResourceProcess );
+
+void ResourceProcess::activity()
+{
+    // retrieve parent's parameters
+	cModule *parentMod = getParentModule();
+    cPar& challCompTime = parentMod->par("challTime");
+    cPar& processingTime = parentMod->par("processingTime");
+
+    // retrieve parent's out gate
+    cGate *parentOutGate = parentMod->gate("port$o");
+
+    // assign server address: index of Switch's gate to which servers are connected
+    int maxIndex = parentOutGate->getNextGate()->size()-1;
+    int consumerAddr = maxIndex-3; WATCH(consumerAddr);
+    int masterAddr = maxIndex-2; WATCH(masterAddr);
+    int attributeAddr = maxIndex-1; WATCH(attributeAddr);
+    int resourceAddr = maxIndex; WATCH(resourceAddr);
+
+    // assign myself address and process ID
+    int myAddr = resourceAddr; WATCH(myAddr);
+    int myProcId = getId(); WATCH(myProcId);
+
+    // connection information for client side
+    int clientAddr = 0; WATCH(clientAddr);
+    int clientProcId=0; WATCH(clientProcId);
+
+    int type; WATCH(type);
+
+    UCACPacket *recvPkt, *pk;
+    UCACDataPacket *datapk;
+
+    // receive the CONN_REQ we were created to handle
+    pk = (UCACPacket *) receive();
+    if (pk->getKind()==CONN_REQ) {
+    	EV << "resourceProc ID = " << myProcId << " got CONN_REQ\n";
+    	//retrieve client addresses and process ID
+    	clientAddr = pk->getSrcAddress();
+    	clientProcId = pk->getSrcProcId();
+    }
+    else
+    	error("resourceProc: connection protocol error!");
+
+
+    // set the module name to something informative
+    char buf[30];
+    sprintf(buf, "resourceProc%d-clientAddr%d", myProcId, clientAddr);
+    setName(buf);
+
+    // respond with CONN_ACK
+    pk->setName("CONN_ACK");
+    pk->setKind(CONN_ACK);
+    pk->setSrcAddress(myAddr);
+    pk->setDestAddress(clientAddr);
+    pk->setSrcProcId(myProcId);
+    pk->setDestProcId(clientProcId);
+    sendDirect(pk, parentOutGate);
+    EV << "resourceProc: sending CONN_ACK to client addr = " << clientAddr << endl;
+
+    // waiting for File location from consumer
+    pk = (UCACPacket *) receive();
+    if (pk->getKind()==FILE_REQ) {
+    	EV << "resourceProc: got File Request\n";
+    	// response consumer with Policy and Challenge
+    	EV << "resourceProc: Computing exponentiation for challenge\n";
+    	wait( (double)challCompTime );
+
+    	pk->setName("CHALLENGE");
+    	pk->setKind(CHALLENG);
+    	pk->setSrcAddress(myAddr);
+    	pk->setDestAddress(clientAddr);
+    	pk->setSrcProcId(myProcId);
+    	pk->setDestProcId(clientProcId);
+    	sendDirect(pk, parentOutGate);
+    	EV << "resourceProc: 2 reply with Challenge and Policy\n";
+    }
+    else
+    	error("resourceProc: file protocol error!");
+
+    //
+    // consumer is waiting for keys from owner and attribute
+    //
+
+    // waiting for Response from consumer
+    recvPkt = (UCACPacket *) receive(); // forever
+    if (recvPkt->getKind()==RESPONSE) {
+    	EV << "resourceProc: got Response\n";
+    	delete recvPkt;
+    }
+    else
+    	error("resourceProc: response protocol error!");
+
+    // process data packets until DISC_REQ comes
+
+    for(;;) {
+        // waiting for DATA packets (or DISC_REQ)
+        pk = (UCACPacket *) receive();
+        type = pk->getKind();
+
+        if (type==DISC_REQ)
+        	break;
+        else if (type==DATA) {
+        	EV << "resourceProc: got DATA(query), processing...\n";
+        	datapk = (UCACDataPacket *) pk;
+        	wait( (double)processingTime );
+
+        	datapk->setName("DATA(result)");
+        	datapk->setKind(DATA);
+        	datapk->setSrcAddress(myAddr);
+        	datapk->setDestAddress(clientAddr);
+        	datapk->setSrcProcId(myProcId);
+          	datapk->setDestProcId(clientProcId);
+        	datapk->setPayload("result");
+        	sendDirect(datapk, parentOutGate);
+        	EV << "resourceProc: sent DATA(result)\n";
+        }
+        else
+        	error("resourceProc: disconnect protocol error!");
+    }
+
+    // connection tear down in response to DISC_REQ
+    EV << "resourceProc: got DISC_REQ, sending DISC_ACK\n";
+    pk->setName("DISC_ACK");
+    pk->setKind(DISC_ACK);
+    pk->setSrcAddress(myAddr);
+    pk->setDestAddress(clientAddr);
+	pk->setSrcProcId(myProcId);
+	pk->setDestProcId(clientProcId);
+    sendDirect(pk, parentOutGate);
+
+	EV << "resourceProc: sent DISC_ACK and delete module itself\n";
+    deleteModule();
+}

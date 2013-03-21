@@ -1,0 +1,32 @@
+version 2
+run Single-0-20110902-15:41:53-6108
+attr configname Single
+attr datetime 20110902-15:41:53
+attr experiment Single
+attr inifile /home/anuchart/simulation/UCAC/nocrypto.ini
+attr iterationvars ""
+attr iterationvars2 $repetition=0
+attr measurement ""
+attr network UCACnet
+attr processid 6108
+attr repetition 0
+attr replication #0
+attr resultdir results
+attr runnumber 0
+attr seedset 0
+
+scalar UCACnet.owner[0] 	latency:timeavg 	32.701611440105
+attr interpolationmode  none
+attr title  "Latency time of file print, timeavg"
+attr unit  s
+statistic UCACnet.owner[0] 	latency:stats
+field count 174
+field mean 32.724069540556
+field stddev 5.044410296919
+field sum 5693.9881000567
+field sqrsum 190732.6335665
+field min 23.999999999976
+field max 49.853888791535
+attr interpolationmode  none
+attr title  "Latency time of file print, stats"
+attr unit  s

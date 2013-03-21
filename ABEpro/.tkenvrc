@@ -1,0 +1,5 @@
+# Partial Tkenv config file -- see $HOME/.tkenvrc as well
+inspector "simulation.scheduled-events.authority send conn ACK to consumer" "UCACPacket" "1" "556x314+893+407:normal"
+inspector "UCACnet" "UCACnet" "2" "607x337+994+108:normal"
+inspector "simulation.scheduled-events.consumer send connect request to authority" "UCACPacket" "1" "593x314+647+178:normal"
+

@@ -1,0 +1,135 @@
+/*
+ * AttributeProcess.cc
+ *
+ *  Created on: Aug 8, 2011
+ *      Author: anuchart
+ */
+
+#include "UCACPacket_m.h"
+
+#define STACKSIZE 16384
+
+class AttributeProcess : public cSimpleModule
+{
+  public:
+    AttributeProcess() : cSimpleModule(STACKSIZE) {}
+    virtual void activity();
+};
+
+Define_Module( AttributeProcess );
+
+void AttributeProcess::activity()
+{
+    // retrieve parent's parameters
+	cModule *parentMod = getParentModule();
+    cPar& desc1CompTime = parentMod->par("desc1Time");
+    cPar& desc2CompTime = parentMod->par("desc2Time");
+
+    // retrieve parent's out gate
+    cGate *parentOutGate = parentMod->gate("port$o");
+
+    // assign server address: index of Switch's gate to which servers are connected
+    int maxIndex = parentOutGate->getNextGate()->size()-1;
+    int consumerAddr = maxIndex-3; WATCH(consumerAddr);
+    int masterAddr = maxIndex-2; WATCH(masterAddr);
+    int attributeAddr = maxIndex-1; WATCH(attributeAddr);
+    int resourceAddr = maxIndex; WATCH(resourceAddr);
+
+    // assign myself address and process ID
+    int myAddr = attributeAddr; WATCH(myAddr);
+    int myProcId = getId(); WATCH(myProcId);
+
+    // connection information for client side
+    int clientAddr = 0; WATCH(clientAddr);
+    int clientProcId = 0; WATCH(clientProcId);
+
+    int type; WATCH(type);
+
+    UCACPacket *pk;
+
+    // receive the CONN_REQ we were created to handle
+    pk = (UCACPacket *) receive();
+    if (pk->getKind()==CONN_REQ) {
+    	EV << "attributeProc ID = " << myProcId << " got CONN_REQ\n";
+    	//retrieve client addresses and process ID
+    	clientAddr = pk->getSrcAddress();
+    	clientProcId = pk->getSrcProcId();
+    }
+    else
+    	error("attributeProc: connection protocol error!");
+
+
+    // set the module name to something informative
+    char buf[30];
+    sprintf(buf, "attributeProc%d-clientAddr%d", myProcId, clientAddr);
+    setName(buf);
+
+    // respond with CONN_ACK
+    pk->setName("CONN_ACK");
+    pk->setKind(CONN_ACK);
+    pk->setSrcAddress(myAddr);
+    pk->setDestAddress(clientAddr);
+    pk->setSrcProcId(myProcId);
+    pk->setDestProcId(clientProcId);
+    sendDirect(pk, parentOutGate);
+    EV << "attributeProc: sent CONN_ACK to client addr = " << clientAddr << endl;
+
+    // waiting for DES1_REQ or DES2_REQ
+    // by verifying consumer ID, URI redirect, Authorize code, (policy)
+    pk = (UCACPacket *) receive();
+    type = pk->getKind();
+
+    // DES1_REQ from master
+    if (type==DES1_REQ) {
+    	EV << "attributeProc: got DES1 Request\n";
+    	// respond master with DES1_RES
+    	EV << "attributeProc: Computing exponentiation for descriptive set-1\n";
+    	wait( (double)desc1CompTime );
+
+    	pk->setName("DES1_RES");
+    	pk->setKind(DES1_RES);
+    	pk->setSrcAddress(myAddr);
+    	pk->setDestAddress(clientAddr);
+    	pk->setSrcProcId(myProcId);
+    	pk->setDestProcId(clientProcId);
+    	sendDirect(pk, parentOutGate);
+    	EV << "attributeProc: 6.2 reply with DES1 Response\n";
+    }
+    // DES2_REQ from consumer
+    else if (type==DES2_REQ) {
+    	EV << "attributeProc: got DES2 Request\n";
+    	// respond consumer with DES2_RES
+    	EV << "attributeProc: Computing exponentiation for descriptive set-2\n";
+    	wait( (double)desc2CompTime );
+
+    	pk->setName("DES2_RES");
+    	pk->setKind(DES2_RES);
+    	pk->setSrcAddress(myAddr);
+    	pk->setDestAddress(clientAddr);
+    	pk->setSrcProcId(myProcId);
+    	pk->setDestProcId(clientProcId);
+    	sendDirect(pk, parentOutGate);
+    	EV << "attributeProc: 9.2 reply with DES2 Response\n";
+    }
+    else
+    	error("attributeProc: descriptive set-1/set-2 protocol error!");
+
+    // wait for DISC_REQ  before tear down
+    pk = (UCACPacket *) receive();
+    if (pk->getKind()==DISC_REQ) {
+    	EV << "attributeProc: got DISC_REQ\n";
+    	// connection tear down in response to DISC_REQ
+    	pk->setName("DISC_ACK");
+    	pk->setKind(DISC_ACK);
+    	pk->setSrcAddress(myAddr);
+    	pk->setDestAddress(clientAddr);
+    	pk->setSrcProcId(myProcId);
+    	pk->setDestProcId(clientProcId);
+    	sendDirect(pk, parentOutGate);
+    	EV << "attributeProc: sending DISC_ACK and delete module itself\n";
+    	deleteModule();
+    }
+    else
+        error("attributeProc: disconnect protocol error!");
+}
+

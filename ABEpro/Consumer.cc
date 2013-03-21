@@ -1,0 +1,65 @@
+/*
+ * Consumer.cc
+ *
+ *  Created on: Mar 8, 2013
+ *      Author: s29zhu
+ */
+
+#include "UCACPacket_m.h"
+#include "pbc/pbc.h"
+#include <iostream>
+#include <cstring>
+using namespace std;
+class Consumer : public cSimpleModule
+{
+  private:
+    cModuleType *srvProcType;
+    pairing_t pairing;
+    element_t g, h, f, owner_pub;
+  protected:
+    virtual void initialize();
+    virtual void handleMessage(cMessage *msg);
+};
+
+Define_Module(Consumer);
+
+
+void Consumer::initialize()
+{
+/*    UCACPacket *starter = new UCACPacket("consumer starts message", 100);
+    simtime_t current_time = simTime();
+    scheduleAt(current_time + 0.004, starter);*/
+    srvProcType = cModuleType::find("ConsumerProcess");
+
+}
+
+void Consumer::handleMessage(cMessage *msg)
+{
+    UCACPacket *m = check_and_cast<UCACPacket *>(msg);
+
+    if(m->isSelfMessage()){
+        EV<<"consumer caught selfmessage\n";
+        delete msg;
+    }else if (m->getKind() == CONN_REQ){
+        EV<<"consumer got conn_req packet from owner\n";
+        cModule *mod = srvProcType->createScheduleInit("consumerProc",this);
+        EV << "CONN_REQ: Consumer created process ID = " << mod->getId() << endl;
+        sendDirect(m, mod, "in");
+    } else{
+        // otherwise the process has already created, so redirect to that process.
+        int serverProcId = m->getDestProcId();
+        EV << "Consumer is redirecting msg to process ID = " << serverProcId << endl;
+        cModule *mod = simulation.getModule(serverProcId);
+        // unless cannot find the destination process, destroy the packet
+        if (!mod) {
+            EV << " That process already exited, deleting msg\n";
+            delete m;
+        } else {
+            sendDirect(m, mod, "in");
+        }
+    }
+}
+
+
+
+
