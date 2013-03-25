@@ -27,4 +27,202 @@ m*n matrix          n*1 matrix
     ...          *  |... |  = 0
 |...............|   |xn  |
 */
+int twiddle(int *x, int *y, int *z, int *p){
+    int i, j, k;
+    j = 1;
+    while(p[j] <= 0)//until we met one which is non-zero
+        j++;
+    if(p[j-1] == 0){
+        for(i = j - 1; i != 1; i--)
+            p[i] = -1;
+        p[j] = 0;
+        *x = *z = 0;
+        p[1] = 1;
+        *y = j - 1;
+    }
+    else{
+        if(j > 1)
+        p[j - 1] = 0;
+        do
+        j++;
+        while(p[j] > 0);
+        k = j-1;
+        i = j;
+        while(p[i] == 0)
+            p[i++] = -1;
+        if(p[i] == -1){
+            p[i] = p[k];
+            *z = p[k] - 1;
+            *x = i - 1;
+            *y = k - 1;
+            p[k] = -1;
+        }
+        else{
+            if(i == p[0])//end of the combination, p[0] is n+1 all the time
+                    //
+                return(1);
+            else{
+                p[j] = p[i];
+                *z = p[i] - 1;
+                p[i] = 0;
+                *x = j - 1;
+                *y = i - 1;
+            }
+        }
+    }
+    return(0);
+}
+
+void inittwiddle(int m, int n, int *p)
+{
+    int i;
+    p[0] = n+1;//size of p is n+2, first element is?
+    for(i = 1; i != n-m+1; i++)
+        p[i] = 0;
+    while(i != n+1)//i begin with value of n-m+1, till n+1
+    {
+        p[i] = i+m-n;//p[i] in the range of 1 to m + 1
+        i++;
+    }
+    p[n+1] = -2;//last element is?
+    if(m == 0)
+        p[1] = 1;
+}
+
+//check if the PS  is in the queue, if so, increament the node's count; else insert PS at the tail of the queue
+void compare_shares(PotentialShares *header, PotentialShares *PS, PotentialShares *tail){
+    PotentialShares *q = header, *pre_q = header;
+    int i = 0;
+    while(q != NULL){
+        for(i = 0; i < N; i++){
+            if(element_cmp(q->shares[i], PS->shares[i]))
+                break;
+        }
+        if(i == N){//found the node that contains same share array
+            q->count += PS->count;//increase the count by 1
+            if(q->count > header->count){//move the node which contains largest count to the head of the queue
+                pre_q->next = q->next;
+                q->next = header;
+                header = q;
+            }
+            delete PS;//delete the PS memory
+            break;//stop looking for node
+        }
+        else{
+            pre_q = q;
+            q = q->next;//continuing looking for the node
+        }
+    }
+    if(q == NULL){//no node found that contain same share array, insert the node to the tail of the queues
+        tail->next = PS;
+        tail = PS;
+        tail->next = NULL;
+    }
+}
+
+void initialize_shares(PotentialShares *PS, pairing_t pairing){
+    int i = 0;
+    for(i = 0; i < N; i++){
+        element_init_GT(PS->shares[i], pairing);
+    }
+    PS->count = 1;
+    PS->next = NULL;
+}
+
+void get_px_value(element_t value, int x, int *c, element_t *shares, pairing_t pairing){
+    element_t ele_c[K];
+    element_t invert_c[K];
+    element_t temp_shares[N];
+    element_t ele_x, product, sum;
+    mpz_t mpz_c[K];
+    mpz_t mpz_x;
+    int i = 0, j = 0;
+
+    mpz_init(mpz_x);
+    element_init_Zr(ele_x, pairing);
+    element_init_Zr(product, pairing);
+    element_init_Zr(sum, pairing);
+    mpz_set_si(mpz_x, x);
+    element_set_mpz(ele_x, mpz_x);
+
+    for(i = 0; i < K; i++){
+        element_init_Zr(ele_c[i], pairing);
+        element_init_Zr(invert_c[i], pairing);
+        mpz_init(mpz_c[i]);
+        mpz_set_si(mpz_c[i], c[i]);
+        element_set_mpz(ele_c[i], mpz_c[i]);
+        element_invert(invert_c[K], ele_c[K]);
+    }
+    for(i = 0; i < N; i++){
+        element_init_Zr(temp_shares[i], pairing);
+        element_set(temp_shares[i], shares[i]);
+    }
+
+    for(i = 0; i < K; i++){
+        element_set1(product);
+        element_set0(sum);
+        //compute qi(x) for given x
+        for(j = 0; j < K; j++){
+            if(j != i){
+                element_add(sum, ele_x, invert_c[j]);
+                element_mul(product, product, sum);
+                element_add(sum, ele_c[i], invert_c[j]);
+                element_div(product, product, sum);
+            }
+        }
+        //e(g,g)^(ra*qi(x))
+        element_pow_zn(temp_shares[c[i] - 1], temp_shares[c[i] - 1], product);
+    }
+    element_set1(value);
+    for(i = 0; i < K; i++)
+        element_mul(value, value, temp_shares[c[i] - 1]);
+}
+
+void  get_potential_shares(PotentialShares *p, element_t *shares, int *c, int *b, pairing_t pairing){
+    int i = 0;
+    //the connection between c[i] and shares[i] is shares[i] = shares[c[i] - 1], c[i] = i + 1
+    for(i = 0; i < K; i++){
+        element_set(p->shares[c[i] - 1], shares[c[i] - 1]);
+    }
+    for(i = 0; i < N - K; i++){//caculate p->shares[b[i] - 1]
+        get_px_value(p->shares[b[i] - 1], b[i] - 1, c, shares, pairing);
+    }
+}
+
+void get_correct_shares(element_t *correct_shares, element_t *shares, pairing_t pairing){
+    int i, x, y, z, p[N+2], b[N - M];
+  int a[N] = {0};
+  int c[N] = {0};
+  PotentialShares *header = NULL, *p_new = NULL, *tail = NULL;
+  header = p_new;
+  inittwiddle(K, N, p);
+  //a[i] is full xi_array which contains N xi-s
+  for(i = 0; i < N; i++)
+        a[i] = i + 1;
+  //c[i] is pairtial xi_array which contains K xi-s
+  for(i = N - K; i != N; i++){
+        c[i - N + K] = a[i];
+  }
+  //set the left over shares
+  for(i = 0; i < N - M; i++){
+        b[i] = a[i];
+  }
+
+  while(!twiddle(&x, &y, &z, p)){
+        for(i = 0; i < N - M; i++){
+            if(b[i] == a[x]){
+                b[i] = c[z];
+                break;
+            }
+        }
+        c[z] = a[x];//c[z]+1 are the xi-s
+        p_new = new PotentialShares;
+        initialize_shares(p_new, pairing);//???doubt whether this is ok for memory allocation
+        get_potential_shares(p_new, shares, c, b, pairing);
+        compare_shares(header, p_new, tail);
+  }
+  //after the while loop, header should point to the node which contains correct shares
+  for(i = 0; i < N; i++)
+      element_set(correct_shares[i], header->shares[i]);
+}
 

@@ -1,8 +1,9 @@
 /*
- * Resource.cc
+ * Owner.cc
  *
- *  Created on: Aug 23, 2011
- *      Author: anuchart
+ *  Feb 28 2013
+ *  Author: Shasha Zhu
+ *
  */
 
 #include "UCACPacket_m.h"

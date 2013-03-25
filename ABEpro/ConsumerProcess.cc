@@ -7,6 +7,7 @@
 #include "UCACPacket_m.h"
 #include <iostream>
 #include "grs.h"
+#include "stdbool.h"
 
 using namespace std;
 
@@ -21,6 +22,7 @@ class ConsumerProcess : public cSimpleModule
     int attributeAddr;
     int resourceAddr;
     cGate *parentOutGate;
+    bool err;
  //   int procId;
   public:
     ConsumerProcess() : cSimpleModule(0) {}
@@ -133,6 +135,7 @@ void ConsumerProcess::initialize(){
         fclose(fp);
     }
     sk_token = new Token;
+    err = false;
     int i = 0;
     element_init_G1(sk_token->D, pairing);
     for(i = 0; i < NUM_SHARE; i++){
@@ -357,42 +360,74 @@ void ConsumerProcess::handleMessage(cMessage *msg)
                                      add_vector,
                                      add_temp);
             GeneratorMatrix(generator_matrix);
-            cout<<"double check parity check matrix in consumer"<<endl;
-            for(i = 0; i < K; i++){
-                element_set0(elimination);
-                for(j = 0; j < N; j++){
-                     element_mul(generator_matrix[i][j], generator_matrix[i][j], parity_check_matrix[1][j]);
-                     element_add(elimination, elimination, generator_matrix[i][j]);
-                }
-                element_printf("%B  ", elimination);
-                cout<<endl;
-            }
-            element_t qR[8];
-            for(i = 0; i < 8; i++){
-                element_init_Zr(qR[i], pairing);
-            }
-
-            element_set_str(qR[0], "494542596917689980177291032045340379312922546410", 10);
-            element_set_str(qR[1], "550456852650019989461932316551165113387472936381", 10);
-            element_set_str(qR[2], "255435593911985800828918153843387137418087958984", 10);
-            element_set_str(qR[3], "506790265821512726869645046657520957981459259195", 10);
-            element_set_str(qR[4], "26161295240287151776813985579009552137202455232", 10);
-            element_set_str(qR[5], "350999477911451345367381868157712940017855360550", 10);
-            element_set_str(qR[6], "476826817569542602028522600501875145454021506528", 10);
-            element_set_str(qR[7], "468644838297277138073529150403714111309750859143", 10);
-            element_set0(elimination);
-            cout<<"codeword check, should be 0\n";
-            for(j = 0; j < N; j++){
-                 element_mul(qR[j], qR[j], parity_check_matrix[1][j]);
-                 element_add(elimination, elimination, qR[j]);
-            }
-            element_printf("%B  ", elimination);
-            cout<<endl;
-            ComputeSyndrome(parity_check_matrix,
+/*-------------------------------debuging code----------------------------------------------------------------*/
+//            cout<<"double check parity check matrix in consumer"<<endl;
+//            for(i = 0; i < K; i++){
+//                element_set0(elimination);
+//                for(j = 0; j < N; j++){
+//                     element_mul(generator_matrix[i][j], generator_matrix[i][j], parity_check_matrix[1][j]);
+//                     element_add(elimination, elimination, generator_matrix[i][j]);
+//                }
+//                element_printf("%B  ", elimination);
+//                cout<<endl;
+//            }
+//            element_t qR[8];
+//            for(i = 0; i < 8; i++){
+//                element_init_Zr(qR[i], pairing);
+//            }
+//            element_set_str(qR[0], "228452663988984330704502677946235773775733558454", 10);
+//            element_set_str(qR[1], "37706185494252579141269145635497021238906178260", 10);
+//            element_set_str(qR[2], "473042237308907541087776171692215261599931863740", 10);
+//            element_set_str(qR[3], "566193113694174200153764478506727156933548864056", 10);
+//            element_set_str(qR[4], "83137590557465448613522642341880613286220966685", 10);
+//            element_set_str(qR[5], "668233655407919654433954371024717424822574751089", 10);
+//            element_set_str(qR[6], "411593869322873636052572571494611805318047805832", 10);
+//            element_set_str(qR[7], "108473827561561578933401346495487342147161899569", 10);
+//            element_set0(elimination);
+//            cout<<"codeword check, should be 0\n";
+//            for(j = 0; j < N; j++){
+//                 element_mul(qR[j], qR[j], parity_check_matrix[0][j]);
+//                 element_add(elimination, elimination, qR[j]);
+//            }
+//            element_printf("%B  ", elimination);
+//            cout<<endl;
+/*-------------------------------debuging code finish-----------------------------------------------------*/
+            //set the first element of the codeword to be 0
+            element_set0(division_result[0]);
+            ComputeSyndrome(syndrome,
+                            parity_check_matrix,
                             division_result,
-                            syndrome,
                             temp);
-
+            for(i = 0; i < N - THRESH_HOLD; i++){
+                if(!element_is1(syndrome[i])){
+                    err = true;
+                    break;
+                }
+            }
+            /*if err(s) is/are detected*/
+            element_t correct_shares[N];
+            for(i = 0; i < N; i++)
+                element_init_Zr(correct_shares[i], pairing);
+            if(err){
+                get_correct_shares(correct_shares, division_result, pairing);
+            }
+            //check again
+            ComputeSyndrome(syndrome,
+                            parity_check_matrix,
+                            correct_shares,
+                            temp);
+            //if still error then abort, else continue to decrypt the package
+            //compute e(g, g)^(ra*qR(0)), ie.e(g, g)^ras
+            element_t value, pair_result;
+            int c[K];
+            for(i = 0; i < K; i++)
+                c[i] = i + 1;
+            element_init_GT(value, pairing);
+            element_init_GT(pair_result, pairing);
+            get_px_value(value, 0, c, correct_shares, pairing);//e(g, g)^(ras)
+            element_pairing(pair_result, C, sk_token->D);//e(g,g)^(alpha*s + ras)
+            element_div(pair_result, pair_result, value);//e(g,g)^(alpha*s)
+            element_div(pair_result, C_tilde, pair_result);//M
             finish();
             break;
         }

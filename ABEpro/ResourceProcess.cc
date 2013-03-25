@@ -1,8 +1,8 @@
 /*
- * ResourceProcess.cc
+ * MasterProcess.cc
  *
- *  Created on: Aug 23, 2011
- *      Author: anuchart
+ *  Created on: Mar 8, 2013
+ *      Author: s29zhu
  */
 
 #include "UCACPacket_m.h"

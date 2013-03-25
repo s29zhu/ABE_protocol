@@ -188,8 +188,8 @@ void OwnerProcess::initialize(){
     fp = fopen("owner/nodes_value_of_tree.txt", "w+");
     if(!fp)
         pbc_die("error opening the tree value file");
-    //choose THRESH_HOLD + 1 random numbers for nodes, 1 for root node
-    for(i = 0; i < THRESH_HOLD + 1; i++){
+    //choose THRESH_HOLD random numbers for nodes, 1 for root node, polynomial of degree THRESH_HOLD - 1
+    for(i = 0; i < THRESH_HOLD; i++){
         element_init_Zr(qR[i], pairing);
         element_random(qR[i]);
         fprintf(fp, "qR(%d):", i);
@@ -197,13 +197,13 @@ void OwnerProcess::initialize(){
         fprintf(fp, "\n");
     }
 
-    element_t poly[THRESH_HOLD + 1], pre_poly[THRESH_HOLD + 1], px[THRESH_HOLD + 1],xi_array[THRESH_HOLD + 1],
-               invert_xi_array[THRESH_HOLD + 1], invert_yi_array[THRESH_HOLD + 1], divisor, temp_div, x, x_temp;
+    element_t poly[THRESH_HOLD], pre_poly[THRESH_HOLD], px[THRESH_HOLD],xi_array[THRESH_HOLD],
+               invert_xi_array[THRESH_HOLD], invert_yi_array[THRESH_HOLD], divisor, temp_div, x, x_temp;
     element_init_Zr(divisor, pairing);
     element_init_Zr(temp_div, pairing);
     element_init_Zr(x, pairing);
     element_init_Zr(x_temp, pairing);
-    for(i = 0; i < THRESH_HOLD + 1; i++){
+    for(i = 0; i < THRESH_HOLD; i++){
         element_init_Zr(poly[i], pairing);
         element_init_Zr(pre_poly[i], pairing);
         element_init_Zr(px[i], pairing);
@@ -214,7 +214,7 @@ void OwnerProcess::initialize(){
     //assign values to xi_array. xi_array[0] = 0; xi_array[1] = 1;...
     mpz_t temp;
     mpz_init(temp);
-    for(i = 0; i < THRESH_HOLD + 1; i++){
+    for(i = 0; i < THRESH_HOLD; i++){
         mpz_set_si(temp, i);
         element_set_mpz(xi_array[i], temp);
     }
@@ -226,18 +226,18 @@ void OwnerProcess::initialize(){
             invert_xi_array,//element_t *
             qR,//element_t * yi_array
             invert_yi_array,//element_t *
-            THRESH_HOLD + 1,//int
+            THRESH_HOLD,//int
             divisor,//element_t
             temp_div);//element_t
     cout<<"finish interpolation\n";
     cout<<"check the poly\n";
-    for(i = 0; i < THRESH_HOLD + 1; i++){
-        get_poly_value(qR[i], px, xi_array[i], x_temp, THRESH_HOLD + 1);
-        element_printf("%B \n", qR[i]);
+    for(i = 0; i < THRESH_HOLD; i++){
+        get_poly_value(qR[i], px, xi_array[i], x_temp, THRESH_HOLD);
+    //    element_printf("%B \n", qR[i]);
     }
     element_clear(divisor);
     element_clear(temp_div);
-    for(i = 0; i < THRESH_HOLD + 1; i++){
+    for(i = 0; i < THRESH_HOLD; i++){
         element_clear(poly[i]);
         element_clear(pre_poly[i]);
         element_clear(xi_array[i]);
@@ -245,11 +245,11 @@ void OwnerProcess::initialize(){
         element_clear(invert_yi_array[i]);
     }
     //use the interpolated polynomial to compute the value of other nodes
-    for(i = THRESH_HOLD + 1; i < NUM_CONFINE + 2; i++){
+    for(i = THRESH_HOLD; i < NUM_CONFINE + 2; i++){
         element_init_Zr(qR[i], pairing);
         mpz_set_si(temp, i);
         element_set_mpz(x, temp);
-        get_poly_value(qR[i], px, x, x_temp, THRESH_HOLD + 1);
+        get_poly_value(qR[i], px, x, x_temp, THRESH_HOLD);
         fprintf(fp, "qR(%d):", i);
         element_out_str(fp, 10, qR[i]);
         fprintf(fp, "\n");

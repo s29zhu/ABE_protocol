@@ -1,7 +1,11 @@
 /*
-*this file provide functions that convert string to element_t type
-*and convert element_t type to string 
-*/
+ * MasterProcess.cc
+ *
+ *  Created on: Mar 8, 2013
+ *      Author: s29zhu
+ *this file provide functions that convert string to element_t type
+ *and convert element_t type to string
+ */
 #include "message_handle.h"
 
 void messageToValue(void *message, mpz_t message_mpz, char *m){

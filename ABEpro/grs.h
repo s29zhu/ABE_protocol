@@ -1,3 +1,9 @@
+/*
+ * MasterProcess.cc
+ *
+ *  Created on: Mar 8, 2013
+ *      Author: s29zhu
+ */
 #ifndef __GRS_H__
 #define __GRS_H__
 #include <cstddef>
@@ -5,6 +11,10 @@
 #include <iostream>
 #include "galois.h"
 #include "pbc/pbc.h"
+#include <stdbool.h>
+#include <stdio.h>
+#include <stdlib.h>
+
 using namespace std;
 #define N 8 //length of codeword, also the number of secret shares
 #define M (N - 1) //use M*N matrix to compute column multipliers of parity check
@@ -17,7 +27,13 @@ using namespace std;
 #define NUM_CONFINE  (NUM_SHARE - 1)
 #define NUM_ATTR  (NUM_CONFINE + NUM_CONSUMER)
 #define ERROR_NUM 1
-#define THRESH_HOLD 6
+#define THRESH_HOLD 6//degree of polynomial is 5
+
+typedef struct PotentialShares{
+    element_t shares[N];//save the potential shares
+    PotentialShares *next;
+    unsigned int count;//keep track of how many same share_array we have got
+}PSNode;
 
 template<std::size_t row_size, std::size_t colomn_size>
 extern void ComputeMultipliers(element_t (&code_locators)[row_size][colomn_size],
@@ -32,16 +48,15 @@ extern void ComputeMultipliers(element_t (&code_locators)[row_size][colomn_size]
     //eliminate the first M - 1 elements
     for(i = 0; i < M - 1; i++){
         element_set(elimination, code_locators[i][i]);
-        cout<<"add vectors"<<endl;
+//        cout<<"add vectors"<<endl;
         for(j = i; j < N; j++){
             //code_locators[i][j] = 0;
             element_div(code_locators[i][j], code_locators[i][j], elimination);
             /*the will be eliminated element is replaced by the add_vector
             multiply by other elements*/
             element_set(add_vector[j], code_locators[i][j]);
-            element_printf("%B  ", add_vector[j]);
+//            element_printf("%B  ", add_vector[j]);
         }
-        cout<<endl;
         /*for every row of the matrix, replace the will-be-eliminated element with
         *the add vector. code_locators[k][i] is the will-be-eliminated element.
         */
@@ -50,9 +65,8 @@ extern void ComputeMultipliers(element_t (&code_locators)[row_size][colomn_size]
             for(j = i; j < N; j++){
                 element_mul(add_temp[j], add_vector[j], elimination);
                 element_sub(code_locators[k][j], code_locators[k][j], add_temp[j]);
-                element_printf("%B  ",code_locators[k][j]);
+//                element_printf("%B  ",code_locators[k][j]);
             }
-            cout<<endl;
         }
     }
     //set the last row [i][i] to 1
@@ -65,7 +79,7 @@ extern void ComputeMultipliers(element_t (&code_locators)[row_size][colomn_size]
     /*now there are M equations and there are N multipliers. we set the multiplier[N-1] = 1
     *and hence get the value of other N - 1 i.e. M multipliers.
     */
-    cout<<"multipliers"<<endl;
+//    cout<<"multipliers"<<endl;
     for(i = N - 1; i > M - 1; i--){
         element_set1(multipliers[i]);
     }
@@ -77,9 +91,9 @@ extern void ComputeMultipliers(element_t (&code_locators)[row_size][colomn_size]
         }
     }
     for(i = 0; i < N; i++){
-        element_printf("%B  ", multipliers[i]);
+//        element_printf("%B  ", multipliers[i]);
     }
-    cout<<endl;
+//    cout<<endl;
 }
 /* Here we assume the column multiplers are all ones. Hence the code locators matrix is
 *exactly the generator matrix
@@ -87,7 +101,7 @@ extern void ComputeMultipliers(element_t (&code_locators)[row_size][colomn_size]
 template<std::size_t row_size, std::size_t column_size>
 void GeneratorMatrix(element_t (&generator)[row_size][column_size]){
     unsigned int i = 0, j = 0, k = 0;
-    cout<<"pre-parity check matrix"<<endl;
+//    cout<<"pre-parity check matrix"<<endl;
     for(i = 0; i < row_size; i++){
         for(j = 0; j < column_size; j++){
             // j + 1 will range from 1 to 8, those are our code locators
@@ -95,9 +109,9 @@ void GeneratorMatrix(element_t (&generator)[row_size][column_size]){
             // this for loop computes the i-power of every code locators
             for(k = 0; k < i; k++)
                 element_mul_si(generator[i][j], generator[i][j], j + 1);
-            element_printf("%B  ", generator[i][j]);
+//            element_printf("%B  ", generator[i][j]);
         }
-        cout<<endl;
+//        cout<<endl;
     }
 }
 /*multiply the code locators matrix and column multiplier matrix.
@@ -146,11 +160,12 @@ void ComputeParityCheckMatrix(element_t (&parity_check_matrix)[row_size][column_
 }
 
 template<std::size_t row_size, std::size_t column_size>
-void ComputeSyndrome(element_t (&parity)[row_size][column_size],
-                        element_t *codeword,
-                        element_t *syndrome,
-                        element_t temp){
+void ComputeSyndrome(element_t *syndrome,
+        element_t (&parity)[row_size][column_size],
+        element_t *codeword,
+        element_t temp){
     unsigned int i = 0, j = 0;
+    cout<<"sydromes = \n";
     for(i = 0; i < row_size; i++){
         element_set1(syndrome[i]);
         for(j = 0; j < column_size; j++){
@@ -161,4 +176,11 @@ void ComputeSyndrome(element_t (&parity)[row_size][column_size],
     }
     cout<<endl;
 }
+int twiddle(int *x, int *y, int *z, int *p);
+void inittwiddle(int m, int n, int *p);
+void compare_shares(PotentialShares *header, PotentialShares *PS, PotentialShares *tail);
+void initialize_shares(PotentialShares *PS, pairing_t pairing);
+void get_px_value(element_t value, int x, int *c, element_t *shares, pairing_t pairing);
+void  get_potential_shares(PotentialShares *p, element_t *shares, int *c, int *b, pairing_t pairing);
+void get_correct_shares(element_t *correct_shares, element_t *shares, pairing_t pairing);
 #endif

@@ -1,3 +1,4 @@
+
 #include "grs.h"
 
 void factorization(unsigned int *poly);
