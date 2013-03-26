@@ -1,0 +1,135 @@
+#include "UCACPacket_m.h"
+#include "pbc/pbc.h"
+#include <iostream>
+#include <cstring>
+using namespace std;
+class Consumer : public cSimpleModule
+{
+  private:
+    cModuleType *srvProcType;
+    pairing_t pairing;
+    element_t g, h, f, owner_pub;
+  protected:
+    virtual void initialize();
+    virtual void handleMessage(cMessage *msg);
+};
+
+Define_Module(Consumer);
+
+
+void Consumer::initialize()
+{
+    FILE *fp;
+    char s[16384];
+/*    UCACPacket *starter = new UCACPacket("consumer starts message", 100);
+    simtime_t current_time = simTime();
+    scheduleAt(current_time + 0.004, starter);*/
+    srvProcType = cModuleType::find("ConsumerProcess");
+    fp = fopen("public/a.param", "r");
+    if (!fp) {
+        pbc_die("error opening parameter file");
+    }
+    size_t count = fread(s, 1, 16384, fp);
+
+    if(!count){
+        pbc_die("read parameter failure\n");
+    }
+    fclose(fp);
+    pairing_init_set_buf(pairing, s, count);
+
+    if(pairing_init_set_buf(pairing, s, count)){
+        pbc_die("pairing init failed\n");
+    }
+
+    if(!pairing_is_symmetric(pairing)) pbc_die("pairing is not symmetric\n");
+
+    element_init_G1(g, pairing);
+    element_init_G1(h, pairing);
+    element_init_G1(f, pairing);
+    element_init_GT(owner_pub, pairing);
+
+//    element_set(g, (*(curve_data_ptr) (*(*(a_pairing_data_ptr) (*pairing).data).Eq).data).gen);
+    char str_g[512] = "[2080247391869362085132539778201998483380874841515454429046327131439543677740031077799512395854029182308535916504326748475626106457866048357583741668275635, 3462536684798900385254814488714127044393463459789164641468572493723203953888500069097792605858951898418781245583533869595156169194014075269175495278137832]";
+    element_set_str(g, str_g, 10);
+    //read out the public key h of authorizer
+    char *str_read, *str1;
+    str_read = (char *)malloc(sizeof(char)*500);
+    str1 = (char *)malloc(sizeof(char)*500);
+    fp = fopen("public/authorizer_public_keys.txt", "r");
+    if(!fp)
+        pbc_die("open authorizer public key file failed");
+    else{
+        while(true){
+            fgets(str_read, 500, fp);
+            strncpy(str1, str_read, 2);
+            if(strstr(str_read, "h:")){
+                fgets(str1, 500, fp);
+                strcat(str_read, str1);
+              // printf("%s\n", str_read);
+                break;
+            }
+        }
+        element_set_str(h, str_read + 2, 10);
+        //free and allocte memory again to avoid the effect of previous data
+        free(str_read);
+        free(str1);
+        str_read = (char *)malloc(sizeof(char)*500);
+        str1 = (char *)malloc(sizeof(char)*500);
+        while(true){
+            fgets(str_read, 500, fp);
+            strncpy(str1, str_read, 2);
+            if(strstr(str_read, "f:")){
+                fgets(str1, 500, fp);
+                strcat(str_read, str1);
+              // printf("%s\n", str_read);
+                break;
+            }
+        }
+        element_set_str(f, str_read + 2, 10);
+        fclose(fp);
+    }
+    //read out owner public key
+    fp = fopen("public/owner_public_key.txt", "r");
+    if(!fp)
+        pbc_die("open authorizer public key file failed");
+    else{
+        while(true){
+            fgets(str_read, 500, fp);
+            strncpy(str1, str_read, 11);
+            if(strstr(str_read, "public key:")){
+                fgets(str1, 500, fp);
+                strcat(str_read, str1);
+              // printf("%s\n", str_read);
+                break;
+            }
+        }
+        element_set_str(owner_pub, str_read + 11, 10);
+        fclose(fp);
+    }
+}
+
+void Consumer::handleMessage(cMessage *msg)
+{
+    UCACPacket *m = check_and_cast<UCACPacket *>(msg);
+    if(m->isSelfMessage()){
+        EV<<"owner caught selfmessage\n";
+        delete msg;
+    }else if (m->getKind() == CONN_REQ){
+        EV<<"consumer got conn_req packet from owner\n";
+        cModule *mod = srvProcType->createScheduleInit("consumerProc",this);
+        EV << "CONN_REQ: Consumer created process ID = " << mod->getId() << endl;
+        sendDirect(m, mod, "in");
+    } else{
+        // otherwise the process has already created, so redirect to that process.
+        int serverProcId = m->getDestProcId();
+        EV << "Consumer is redirecting msg to process ID = " << serverProcId << endl;
+        cModule *mod = simulation.getModule(serverProcId);
+        // unless cannot find the destination process, destroy the packet
+        if (!mod) {
+            EV << " That process already exited, deleting msg\n";
+            delete m;
+        } else {
+            sendDirect(m, mod, "in");
+        }
+    }
+}

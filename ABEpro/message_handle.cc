@@ -42,18 +42,5 @@ void valueToMessage(char *message, mpz_t message_mpz){
   	message[count] = *c;
 	c += 1;
   }
-//  printf("%s\n", message);
+  printf("%s\n", message);
 }
-
-/*int main(int argc, char **argv){
-  mpz_t message_mpz;
-  void* raw_message = "hello, world,fajohuiuy8w.\0";
-  char message_hex[2048];
-  mpz_init(message_mpz);
-  messageToValue(raw_message, message_mpz, message_hex);
-  valueToMessage(message_hex, message_mpz);
-
-  printf("%s\n", (char *)message_hex);
-  mpz_clear(message_mpz);
-  return 1;
-}*/

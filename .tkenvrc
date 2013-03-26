@@ -1,0 +1,6 @@
+# Partial Tkenv config file -- see $HOME/.tkenvrc as well
+inspector "UCACnet.master.masterProc6-clientAddr0" "MasterProcess" "1" "508x315+1367+78:normal"
+inspector "UCACnet.master.masterProc12-clientAddr0" "MasterProcess" "1" "495x315+1085+30:normal"
+inspector "UCACnet.consumer.consumerProc798-clientAddr0" "ConsumerProcess" "1" "535x315+153+740:normal"
+inspector "UCACnet.attribute.attributeProc7-clientAddr1" "AttributeProcess" "1" "501x315+1885+78:normal"
+

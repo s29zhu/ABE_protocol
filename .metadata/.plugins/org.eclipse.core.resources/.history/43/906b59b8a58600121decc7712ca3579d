@@ -1,0 +1,234 @@
+/*
+ * MasterProcess.cc
+ *
+ *  Created on: Aug 7, 2011
+ *      Author: anuchart
+ */
+
+#include "UCACPacket_m.h"
+#include "pbc/pbc.h"
+
+#define STACKSIZE 16384
+
+class MasterProcess : public cSimpleModule
+{
+  private:
+    pairing_t pairing;
+  public:
+    MasterProcess() : cSimpleModule(STACKSIZE) {}
+    virtual void activity();
+};
+
+Define_Module( MasterProcess );
+
+void MasterProcess::activity()
+{
+    // retrieve parent's parameters
+	cModule *parentMod = getParentModule();
+    //simtime_t timeout = parentMod->par("timeout");
+    cPar& conf1CompTime = parentMod->par("conf1Time");
+    cPar& conf2CompTime = parentMod->par("conf2Time");
+
+    // retrieve parent's out gate
+    cGate *parentOutGate = parentMod->gate("port$o");
+
+    // assign server address: index of Switch's gate to which severs are connected
+    int maxIndex = parentOutGate->getNextGate()->size()-1;
+    int consumerAddr = maxIndex-3; WATCH(consumerAddr);
+    int masterAddr = maxIndex-2; WATCH(masterAddr);
+    int attributeAddr = maxIndex-1; WATCH(attributeAddr);
+    int resourceAddr = maxIndex; WATCH(resourceAddr);
+
+    // assign myself address and process ID
+    int myAddr = masterAddr; WATCH(myAddr);
+    int myProcId = getId(); WATCH(myProcId);
+
+    // information connection for client side
+    int clientAddr = 0; WATCH(clientAddr);
+    //int clientProcId = 0; WATCH(clientProcId);
+
+    // information connection for server side
+    int attributeProcId = 0; WATCH(attributeProcId);
+
+    UCACPacket *connReq, *connAck, *discReq, *discAck;
+    UCACPacket *sendPkt, *recvPkt;
+
+    UCACPacket *pk;
+
+    // receive the CONN_REQ we were created to handle
+    pk = (UCACPacket *) receive();
+    if (pk->getKind()==CONN_REQ) {
+    	EV << "masterProc ID = " << myProcId << " got CONN_REQ\n";
+        //retrieve client addresses and process ID
+        clientAddr = pk->getSrcAddress();
+        //clientProcId = pk->getSrcProcId();
+    }
+    else
+       	error("masterProc: connect protocol error!");
+
+    // set the module name to something informative
+    char buf[30];
+    sprintf(buf, "masterProc%d-clientAddr%d", myProcId, clientAddr);
+    setName(buf);
+
+    // respond with CONN_ACK
+    pk->setName("CONN_ACK");
+    pk->setKind(CONN_ACK);
+    pk->setSrcAddress(myAddr);
+    pk->setDestAddress(clientAddr);
+    pk->setSrcProcId(myProcId);
+    sendDirect(pk, parentOutGate);
+    EV << "masterProc: sent CONN_ACK to client addr = " << clientAddr << endl;
+
+    // waiting for authorize request from owner
+    recvPkt = (UCACPacket *) receive();
+    if (recvPkt->getKind()==AUTZ_REQ) {
+    	EV << "masterProc: got authorize request\n";
+    	delete recvPkt;
+    }
+    else
+       	error("masterProc: authorize protocol error!");
+
+	// sending Authenticate Request to owner
+	sendPkt = new UCACPacket("AUTN_REQ", AUTN_REQ);
+	sendPkt->setKind(AUTN_REQ);
+	sendPkt->setSrcAddress(myAddr);
+	sendPkt->setDestAddress(clientAddr);
+	sendPkt->setSrcProcId(myProcId);
+	sendDirect(sendPkt, parentOutGate);
+	EV << "masterProc: 4.1 sent Authenticate Request\n";
+
+	// waiting for credential from owner
+    recvPkt = (UCACPacket *) receive();
+    if (recvPkt->getKind()==AUTN_RES) {
+        EV << "masterProc: got Authenticate Response\n";
+        delete recvPkt;
+    }
+    else
+       	error("masterProc: authenticate protocol error!");
+
+    // waiting for allowed attribute from owner
+    recvPkt = (UCACPacket *) receive();
+    if (recvPkt->getKind()==ATTR_REQ) {
+		EV << "masterProc: got Attribute Request\n";
+		delete recvPkt;
+    }
+    else
+       	error("masterProc: attribute protocol error!");
+
+	//
+	// setup connecting to attribute
+	//
+	for(;;) {
+	    // connection setup
+	    connReq = new UCACPacket("CONN_REQ", CONN_REQ);
+	    connReq->setSrcAddress(myAddr);
+	    connReq->setDestAddress(attributeAddr);
+	    connReq->setSrcProcId(myProcId);
+	    sendDirect( connReq, parentOutGate );
+	    EV << "masterProc: sent CONN_REQ\n";
+
+	    // waiting for CONN_ACK
+	    //connAck = (UCACPacket *) receive(timeout);
+	    connAck = (UCACPacket *) receive();
+
+	    //if (connAck==NULL)
+	    //	goto brokenAttr;
+
+	    if (connAck->getKind()==CONN_ACK) {
+	    	// retrieve server process ID
+	    	attributeProcId = connAck->getSrcProcId();
+	    	EV << "masterProc: got CONN_ACK from attribute process ID = " << attributeProcId << endl;
+	    	delete connAck;
+	    }
+	    else
+	    	error("masterProc: connect protocol error!");
+
+		// request descriptive set-1 keys
+        sendPkt = new UCACPacket("DES1_REQ", DES1_REQ);
+        sendPkt->setSrcAddress(myAddr);
+        sendPkt->setDestAddress(attributeAddr);
+        sendPkt->setSrcProcId(myProcId);
+        sendPkt->setDestProcId(attributeProcId);
+        sendDirect(sendPkt, parentOutGate);
+		EV << "masterProc: 6.1 sending DES1 Request to attribute\n";
+
+  		//waiting for descriptive set-1 key from attribute
+  		//recvPkt = (UCACPacket *) receive(timeout);
+  		recvPkt = (UCACPacket *) receive();
+
+  		if (recvPkt==NULL)
+   			goto brokenAttr;
+
+   		if (recvPkt->getKind()==DES1_RES) {
+   			EV << "masterProc: got DES1 Response\n";
+   			delete recvPkt;
+   		}
+   		else
+   			error("masterProc: DES1 protocol error!");
+
+	    // connection tear down
+	    discReq = new UCACPacket("DISC_REQ", DISC_REQ);
+	    discReq->setSrcAddress(myAddr);
+	    discReq->setDestAddress(attributeAddr);
+	    discReq->setSrcProcId(myProcId);
+	    discReq->setDestProcId(attributeProcId);
+	    sendDirect(discReq, parentOutGate);
+	    EV << "masterProc: sent DISC_REQ\n";
+
+	    //EV << "waiting for DISC_ACK\n";
+	    //discAck = (UCACPacket *) receive(timeout);
+	    discAck = (UCACPacket *) receive();
+
+	    //if (discAck==NULL)
+	    //    goto brokenAttr;
+
+	    if (discAck->getKind()==DISC_ACK) {
+	    	EV << "masterProc: got DISC_ACK\n";
+	    	delete discAck;
+	    	break;
+	    }
+	    else
+	    	error("masterProc: disconnect protocol error!");
+
+    // timeout handing
+    brokenAttr:
+        EV << "masterProc: Timeout since attribute connection broken!\n";
+        if (ev.isGUI()) bubble("Connection broken!");
+    }
+	//
+	// end connecting to attribute
+	//
+
+	// redirecting user-agent from master to consumer
+    // (partial confined and descriptive keys)
+	EV << "masterProc: Computing exponentiation for confined set-1\n";
+	wait( (double)conf1CompTime );
+	EV << "masterProc: Computing exponentiation for confined set-2\n";
+	wait( (double)conf2CompTime );
+
+    sendPkt = new UCACPacket("ATTR_RES", ATTR_RES);
+    sendPkt->setSrcAddress(myAddr);
+    sendPkt->setDestAddress(clientAddr);
+    sendPkt->setSrcProcId(myProcId);
+    sendDirect(sendPkt, parentOutGate);
+    EV << "masterProc: 7 redirect with Attribute Response\n";
+
+     // wait for DISC_REQ  before tear down
+    pk = (UCACPacket *) receive();
+    if (pk->getKind()==DISC_REQ) {
+    	EV << "masterProc: got DISC_REQ\n";
+    	// connection tear down in response to DISC_REQ
+    	pk->setName("DISC_ACK");
+    	pk->setKind(DISC_ACK);
+    	pk->setSrcAddress(myAddr);
+    	pk->setDestAddress(clientAddr);
+    	pk->setSrcProcId(myProcId);
+     	sendDirect(pk, parentOutGate);
+    	EV << "masterProc: sent DISC_ACK and delete module itself\n";
+    	deleteModule();
+    }
+    else
+        error("masterProc: disconnect protocol error!");
+}
+

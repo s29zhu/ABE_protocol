@@ -1,0 +1,54 @@
+/*
+ * Master.cc
+ *
+ *  Created on: Aug 7, 2011
+ *      Author: anuchart
+ */
+
+#include "UCACPacket_m.h"
+
+class Master : public cSimpleModule
+{
+  private:
+    cModuleType *srvProcType;
+
+  protected:
+    virtual void initialize();
+    virtual void handleMessage(cMessage *msg);
+};
+
+Define_Module(Master);
+
+
+void Master::initialize()
+{
+    srvProcType = cModuleType::find("MasterProcess");
+}
+
+void Master::handleMessage(cMessage *msg)
+{
+    UCACPacket *pk = check_and_cast<UCACPacket *>(msg);
+
+    // if receive connection request, create a new process (module)
+    if (pk->getKind()==CONN_REQ)
+    {
+        cModule *mod = srvProcType->createScheduleInit("masterProc",this);
+        EV << "CONN_REQ: Master created process ID = " << mod->getId() << endl;
+        sendDirect(pk, mod, "in");
+    }
+    else
+    // otherwise the process has already created, so redirect to that process.
+    {
+        int serverProcId = pk->getDestProcId();
+        EV << "Master is redirecting msg to process ID = " << serverProcId << endl;
+        cModule *mod = simulation.getModule(serverProcId);
+        // unless cannot find the destination process, destroy the packet
+        if (!mod) {
+            EV << " That process already exited, deleting msg\n";
+            delete pk;
+        } else {
+            sendDirect(pk, mod, "in");
+        }
+    }
+}
+

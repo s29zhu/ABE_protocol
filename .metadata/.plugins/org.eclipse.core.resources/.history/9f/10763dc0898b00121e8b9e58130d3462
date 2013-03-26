@@ -1,0 +1,51 @@
+#include "UCACPacket_m.h"
+#include "pbc/pbc.h"
+#include <iostream>
+#include <cstring>
+using namespace std;
+class Owner : public cSimpleModule
+{
+  private:
+    cModuleType *srvProcType;
+    pairing_t pairing;
+    element_t g, h, f, owner_pub;
+  protected:
+    virtual void initialize();
+    virtual void handleMessage(cMessage *msg);
+    cModule *mod;
+};
+
+Define_Module(Owner);
+
+
+void Owner::initialize()
+{
+    srvProcType = cModuleType::find("OwnerProcess");
+    mod = srvProcType->createScheduleInit("ownerProc",this);
+    int max = gate("port$o")->getNextGate()->size()-1;
+    int consumerAddr;
+    int masterAddr;
+    int attributeAddr;
+    int resourceAddr;
+    int ownerAddr;
+    consumerAddr = max - 3;
+    masterAddr = max - 2;
+    attributeAddr = max - 1;
+    resourceAddr = max;
+    ownerAddr = gate("port$o")->getNextGate()->getIndex();
+    UCACPacket *conn = new UCACPacket("connection request from owner to consumer", CONN_REQ);
+    conn->setSrcAddress(ownerAddr);
+    conn->setDestAddress(consumerAddr);
+    send(conn, "port$o");
+}
+
+void Owner::handleMessage(cMessage *msg)
+{
+    UCACPacket *m = check_and_cast<UCACPacket *>(msg);
+    if(m->isSelfMessage()){
+        EV<<"owner caught selfmessage\n";
+        delete msg;
+    } else{
+        sendDirect(m, mod, "in");
+    }
+}

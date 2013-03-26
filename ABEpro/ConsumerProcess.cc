@@ -8,6 +8,7 @@
 #include <iostream>
 #include "grs.h"
 #include "stdbool.h"
+#include "message_handle.h"
 
 using namespace std;
 
@@ -311,7 +312,7 @@ void ConsumerProcess::handleMessage(cMessage *msg)
             element_t pairing_denominator[NUM_SHARE];
             element_t division_result[NUM_SHARE];
             //print out to check whether the shares are correct compared to owner's shares
-            printf("consumer shares\n");
+//            printf("consumer shares\n");
             for(i = 0; i < NUM_SHARE; i++){
                 element_init_GT(pairing_nominator[i], pairing);
                 element_init_GT(pairing_denominator[i], pairing);
@@ -319,17 +320,18 @@ void ConsumerProcess::handleMessage(cMessage *msg)
                 element_pairing(pairing_nominator[i], sk_token->Di[i], Cy[i]);
                 element_pairing(pairing_denominator[i], sk_token->Di_prime[i], Cy_prime[i]);
                 element_div(division_result[i], pairing_nominator[i], pairing_denominator[i]);
-                element_printf("%B\n", division_result[i]);
+//                element_printf("%B\n", division_result[i]);
             }
 
             element_t pre_parity_check_matrix[M][N];
             element_t parity_check_matrix[N - K][N];
-            element_t generator_matrix[K][N];
+
             element_t multipliers[N];
             element_t add_vector[N];
             element_t add_temp[N];
             element_t syndrome[N];
             element_t elimination, temp;
+
             element_init_Zr(elimination, pairing);
             element_init_GT(temp, pairing);
             for(i = 0; i < N; i++){
@@ -348,20 +350,36 @@ void ConsumerProcess::handleMessage(cMessage *msg)
                     element_init_Zr(parity_check_matrix[i][j], pairing);
                 }
             }
-            for(i = 0; i < K; i++){
-                for(j = 0; j < N; j++){
-                    element_init_Zr(generator_matrix[i][j], pairing);
-                }
-            }
+
             ComputeParityCheckMatrix(parity_check_matrix,
                                      pre_parity_check_matrix,
                                      multipliers,
                                      elimination,
                                      add_vector,
                                      add_temp);
-            GeneratorMatrix(generator_matrix);
+            //clear the memory
+            element_clear(elimination);
+            //element_clear(temp);
+            for(i = 0; i < N; i++){
+                element_clear(multipliers[i]);
+                element_clear(add_vector[i]);
+                element_clear(add_temp[i]);
+            }
+            for(i = 0; i < M; i++){
+                for(j = 0; j < N; j++){
+                    element_clear(pre_parity_check_matrix[i][j]);
+                }
+            }
+
 /*-------------------------------debuging code----------------------------------------------------------------*/
 //            cout<<"double check parity check matrix in consumer"<<endl;
+//            element_t generator_matrix[K][N];
+//            for(i = 0; i < K; i++){
+//                for(j = 0; j < N; j++){
+//                    element_init_Zr(generator_matrix[i][j], pairing);
+//                }
+//            }
+//            GeneratorMatrix(generator_matrix);
 //            for(i = 0; i < K; i++){
 //                element_set0(elimination);
 //                for(j = 0; j < N; j++){
@@ -391,26 +409,40 @@ void ConsumerProcess::handleMessage(cMessage *msg)
 //            }
 //            element_printf("%B  ", elimination);
 //            cout<<endl;
+//            for(i = 0; i < K; i++){
+//                for(j = 0; j < N; j++){
+//                    element_clear(generator_matrix[i][j]);
+//                }
+//            }
 /*-------------------------------debuging code finish-----------------------------------------------------*/
-            //set the first element of the codeword to be 0
-            element_set0(division_result[0]);
+            //set one of  elements of the codeword to be 0
+            element_set1(division_result[0]);
+            cout<<"before correction\n";
             ComputeSyndrome(syndrome,
                             parity_check_matrix,
                             division_result,
                             temp);
+            //check whether the syndromes are [1, 0]s
             for(i = 0; i < N - THRESH_HOLD; i++){
                 if(!element_is1(syndrome[i])){
                     err = true;
                     break;
                 }
             }
+
             /*if err(s) is/are detected*/
             element_t correct_shares[N];
-            for(i = 0; i < N; i++)
-                element_init_Zr(correct_shares[i], pairing);
             if(err){
+                for(i = 0; i < N; i++){
+                    element_init_GT(correct_shares[i], pairing);
+                }
                 get_correct_shares(correct_shares, division_result, pairing);
             }
+            cout<<"after correction\n";
+//            for(i = 0; i < N; i++){
+//                element_printf("%B \n", correct_shares[i]);
+//            }
+//            element_printf("\n");
             //check again
             ComputeSyndrome(syndrome,
                             parity_check_matrix,
@@ -418,16 +450,29 @@ void ConsumerProcess::handleMessage(cMessage *msg)
                             temp);
             //if still error then abort, else continue to decrypt the package
             //compute e(g, g)^(ra*qR(0)), ie.e(g, g)^ras
-            element_t value, pair_result;
+            element_t value, pair_result, final_result;
+            mpz_t mpz_message;
+            char message[256];
             int c[K];
             for(i = 0; i < K; i++)
                 c[i] = i + 1;
             element_init_GT(value, pairing);
             element_init_GT(pair_result, pairing);
+            element_init_GT(final_result, pairing);
+            mpz_init(mpz_message);
             get_px_value(value, 0, c, correct_shares, pairing);//e(g, g)^(ras)
             element_pairing(pair_result, C, sk_token->D);//e(g,g)^(alpha*s + ras)
             element_div(pair_result, pair_result, value);//e(g,g)^(alpha*s)
-            element_div(pair_result, C_tilde, pair_result);//M
+            element_printf("in conusmer, secrect share  = %B\n", pair_result);
+            element_div(final_result, C_tilde, pair_result);//M
+            element_printf("in consumer, message = %B\n", final_result);
+            element_to_mpz(mpz_message, final_result);
+            valueToMessage(message, mpz_message);
+            //memory clearance
+            element_clear(value);
+            element_clear(pair_result);
+            element_clear(final_result);
+            mpz_clear(mpz_message);
             finish();
             break;
         }

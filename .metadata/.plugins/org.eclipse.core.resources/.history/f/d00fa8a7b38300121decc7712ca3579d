@@ -1,0 +1,330 @@
+/*
+ * Owner.cc
+ *
+ *  Feb 28 2013
+ *  Author: Shasha Zhu
+ *
+ */
+
+#include "UCACPacket_m.h"
+#include <grs.h>
+#include <message_handle.h>
+//#include <polynomial.h>
+#include <galois.h>
+#include <pbc/pbc.h>
+#include <pbc/pbc_test.h>
+#include <stdio.h>
+#include <math.h>
+#include <string.h>
+#include "generate_owner_keys.h"
+#include <iostream>
+using namespace std;
+
+//#define STACKSIZE 16384
+#define STACKSIZE  8000
+class Owner : public cSimpleModule
+{
+  public:
+    Owner() : cSimpleModule(STACKSIZE) {}
+    virtual void activity();
+};
+
+Define_Module( Owner );
+
+void Owner::activity()
+{
+    // query module parameters
+    //simtime_t timeout1 = par("timeout1");
+    //simtime_t timeout2 = par("timeout2");
+    //simtime_t timeout3 = par("timeout3");
+    cPar& connectionIaTime = par("connIaTime");
+    cPar& graCompTime = par("graTime");
+
+    // assign owner address: index of Switch's gate to which we are connected
+    int myAddr = gate("port$o")->getNextGate()->getIndex(); WATCH(myAddr);
+
+    // assign server address: index of Switch's gate to which servers are connected
+    int maxIndex = gate("port$o")->getNextGate()->size()-1;
+    int consumerAddr = maxIndex-3; WATCH(consumerAddr);
+    int masterAddr = maxIndex-2; WATCH(masterAddr);
+    int attributeAddr = maxIndex-1; WATCH(attributeAddr);
+    int resourceAddr = maxIndex; WATCH(resourceAddr);
+
+    // connection information for server side
+    int consumerProcId = 0; WATCH(consumerProcId);
+    int masterProcId = 0; WATCH(masterProcId);
+
+    // declare for statistic records
+    simtime_t createTime; WATCH(createTime);
+    simtime_t latencyTime; WATCH(latencyTime);
+    simsignal_t latencySignal;
+
+    latencySignal = registerSignal("latency");
+
+    UCACPacket *connReq, *connAck, *discReq, *discAck;
+    UCACPacket *sendPkt, *recvPkt;
+    UCACPacket *pk;
+
+    //
+    // setup connecting to consumer
+    //
+    generate_owner_keys();
+    cout<<"error"<<endl;
+    for(;;)
+    {
+        if (ev.isGUI()) getDisplayString().setTagArg("i",1,"");
+
+        // keep an interval between subsequent connections
+        wait( (double)connectionIaTime );
+
+        // Setup connection to Consumer
+        if (ev.isGUI()) getDisplayString().setTagArg("i",1,"green");
+
+        connReq = new UCACPacket("CONN_REQ", CONN_REQ);
+        connReq->setSrcAddress(myAddr);
+        connReq->setDestAddress(consumerAddr);
+
+        // record message creation-time of print request
+        createTime = connReq->getCreationTime();
+        EV << "owner: creation time of print request message = " << createTime << endl;
+
+        send( connReq, "port$o" );
+        EV << "owner: sending CONN_REQ to server addr = " << consumerAddr << endl;
+
+        // waiting for CONN_ACK from consumer
+        //connAck = (UCACPacket *) receive(timeout1); // 1 step
+        connAck = (UCACPacket *) receive(); // 1 step
+
+        //if (connAck==NULL)
+        //    goto brokenConsumer;
+
+	    if (connAck->getKind()==CONN_ACK) {
+	    	// retrieve server process ID
+	        consumerProcId = connAck->getSrcProcId();
+	        EV << "owner: got CONN_ACK from consumer process ID = " << consumerProcId << endl;
+	        delete connAck;
+	    }
+	    else
+	    	error("owner: connect protocol error!");
+
+        if (ev.isGUI())
+        {
+            getDisplayString().setTagArg("i",1,"gold");
+            bubble("Connected!");
+        }
+
+        //
+        // consumer is connecting to resource
+        //
+
+    	// initial print request at consumer
+    	sendPkt = new UCACPacket("PRNT_REQ", PRNT_REQ);
+    	sendPkt->setSrcAddress(myAddr);
+    	sendPkt->setDestAddress(consumerAddr);
+    	sendPkt->setDestProcId(consumerProcId);
+    	send(sendPkt, "port$o");
+    	EV << "owner: 0 sent Print Request to consumer\n";
+
+    	// waiting for redirecting (AUTZ_REQ) from consumer to master
+    	//pk = (UCACPacket *) receive(timeout1); // 2 steps
+    	pk = (UCACPacket *) receive(); // 2 steps
+
+    	//if (pk==NULL)
+    	//	goto brokenConsumer;
+
+    	if (pk->getKind()==AUTZ_REQ)
+    		EV << "owner: got Redirect (AUTZ_REQ)\n";
+    	else
+    		error("owner: redirect (AUTZ_REQ) protocol error!");
+        //
+        // setup connecting to master
+        //
+    	for(;;) {
+        	// Setup connection to Master
+        	connReq = new UCACPacket("CONN_REQ", CONN_REQ);
+        	connReq->setSrcAddress(myAddr);
+        	connReq->setDestAddress(masterAddr);
+        	send( connReq, "port$o" );
+        	EV << "owner: sent CONN_REQ to server addr = " << masterAddr << endl;
+
+        	// waiting for CONN_ACK from master
+        	//connAck = (UCACPacket *) receive(timeout1); // 1 step
+        	connAck = (UCACPacket *) receive(); // 1 step
+
+        	//if (connAck==NULL)
+        	//	goto brokenMaster;
+
+        	if (connAck->getKind()==CONN_ACK) {
+        		// retrieve server process ID
+        		masterProcId = connAck->getSrcProcId();
+        		EV << "owner: got CONN_ACK from master process ID = " << masterProcId << endl;
+        		delete connAck;
+        	}
+        	else
+        		error("owner: connect protocol error!");
+
+        	// redirect authorize request to master
+        	pk->setName("AUTZ_REQ");
+        	pk->setKind(AUTZ_REQ);
+        	pk->setSrcAddress(myAddr);
+        	pk->setDestAddress(masterAddr);
+        	pk->setDestProcId(masterProcId);
+        	send(pk, "port$o");
+        	EV << "owner: 3 sent Authorize Request\n";
+
+        	// authenticated by master
+        	//pk= (UCACPacket *) receive(timeout1); // 1 step
+        	pk= (UCACPacket *) receive(); // 1 step
+
+        	//if (pk==NULL)
+        	//	goto brokenMaster;
+
+        	if (pk->getKind()==AUTN_REQ)
+        		EV << "owner: got Authenticate Request\n";
+        	else
+        		error("owner: authenticate protocol error!");
+
+        	// sending owner credential to master
+        	pk->setName("AUTN_RES");
+        	pk->setKind(AUTN_RES);
+        	pk->setSrcAddress(myAddr);
+        	pk->setDestAddress(masterAddr);
+        	pk->setDestProcId(masterProcId);
+        	send(pk, "port$o");
+        	EV << "owner: 4.2 sent Authenticate Response\n";
+
+        	// assign allowed attributes to master
+        	EV << "pick up a,r then computing exponentiation for g^(ra)\n";
+        	wait( (double)graCompTime );
+
+        	sendPkt = new UCACPacket("ATTR_REQ", ATTR_REQ);
+        	sendPkt->setSrcAddress(myAddr);
+        	sendPkt->setDestAddress(masterAddr);
+        	sendPkt->setDestProcId(masterProcId);
+        	send(sendPkt, "port$o");
+        	EV << "owner: 5 sent Attribute Request\n";
+
+        	//
+        	// master is connecting to attribute
+        	//
+
+
+            // waiting for Redirect (ATTR_RES) from master to consumer
+        	//pk = (UCACPacket *) receive(timeout2); // 6 steps
+        	pk = (UCACPacket *) receive(); // 6 steps
+
+        	//if (pk==NULL)
+        	//	goto brokenMaster;
+
+        	if (pk->getKind()==ATTR_RES)
+        		EV << "owner: got redirect (ATTR_RES)\n";
+        	else
+        		error("owner: redirect (ATTR_RES) protocol error!");
+
+        	// connection tear down
+        	EV << "owner: sent DISC_REQ\n";
+        	discReq = new UCACPacket("DISC_REQ", DISC_REQ);
+        	discReq->setSrcAddress(myAddr);
+        	discReq->setDestAddress(masterAddr);
+        	discReq->setDestProcId(masterProcId);
+        	send(discReq, "port$o");
+
+        	//discAck = (UCACPacket *) receive(timeout1); // 1 step
+        	discAck = (UCACPacket *) receive(); // 1 step
+
+        	//if (discAck==NULL)
+        	//	goto brokenMaster;
+
+        	if (discAck->getKind()==DISC_ACK) {
+        		EV << "owner: got DISC_ACK\n";
+        		delete discAck;
+        		break;
+        	}
+        	else
+        		error("owner: disconnect protocol error!");
+
+        // error handling
+        //brokenMaster:
+        //	EV << "owner: Timeout since master connection broken!\n";
+        //	if (ev.isGUI()) bubble("Connection broken!");
+        }
+        //
+        // end connecting to master
+        //
+
+    // redirect AUTZ_RES to consumer
+    pk->setName("AUTZ_RES");
+    pk->setKind(AUTZ_RES);
+    pk->setSrcAddress(myAddr);
+    pk->setDestAddress(consumerAddr);
+    pk->setDestProcId(consumerProcId);
+    send(pk, "port$o");
+    EV << "owner: 7 sent Authorize Response\n";
+
+    // sent Confined set-1, Descriptive set-1 and owner private-key to consumer.
+
+	// EV << "delay for computing ElGamal";
+	// wait( (double)graCompTime );
+
+    sendPkt = new UCACPacket("OWNER_SK", OWNER_SK);
+    sendPkt->setSrcAddress(myAddr);
+    sendPkt->setDestAddress(consumerAddr);
+    sendPkt->setDestProcId(consumerProcId);
+    send(sendPkt, "port$o");
+    EV << "owner: 8 sent Owner SK\n";
+
+    //
+    // consumer is connecting to attribute
+    // and transfer files from resource
+    //
+
+    //waiting for Print Response from consumer
+    //recvPkt = (UCACPacket *) receive(timeout3); // 10 steps
+    recvPkt = (UCACPacket *) receive(); // 10 steps
+
+    //if (recvPkt==NULL)
+    //	goto brokenConsumer;
+
+    if (recvPkt->getKind()==PRNT_RES) {
+    	EV << "owner: got Print Response\n";
+
+    	// calculate latency time of print request
+    	latencyTime = recvPkt->getArrivalTime() - createTime;
+    	EV << "owner: latency time of printing request = " << latencyTime << endl;
+    	emit(latencySignal, latencyTime);
+    	delete recvPkt;
+    }
+    else
+     	error("owner: print protocol error!");
+
+    if (ev.isGUI()) getDisplayString().setTagArg("i",1,"blue");
+
+    // connection tear down
+    EV << "owner: sent DISC_REQ\n";
+    discReq = new UCACPacket("DISC_REQ", DISC_REQ);
+    discReq->setSrcAddress(myAddr);
+    discReq->setDestAddress(consumerAddr);
+    discReq->setDestProcId(consumerProcId);
+    send(discReq, "port$o");
+
+    //discAck = (UCACPacket *) receive(timeout1);
+    discAck = (UCACPacket *) receive();
+
+    //if (discAck==NULL)
+    //	goto brokenConsumer;
+
+    if (discAck->getKind()==DISC_ACK) {
+    	EV << "owner: got DISC_ACK\n";
+    	delete discAck;
+    	if (ev.isGUI()) bubble("Disconnected!");
+        continue;
+    }
+    else
+    	error("owner: disconnect protocol error!");
+
+    // error handling
+    //brokenConsumer:
+    //	EV << "owner: Timeout since consumer connection broken!\n";
+    //	if (ev.isGUI()) bubble("Connection broken!");
+    }
+}

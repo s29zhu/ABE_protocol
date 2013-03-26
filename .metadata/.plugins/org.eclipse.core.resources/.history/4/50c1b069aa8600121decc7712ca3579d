@@ -1,0 +1,71 @@
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Lesser General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Lesser General Public License for more details.
+// 
+// You should have received a copy of the GNU Lesser General Public License
+// along with this program.  If not, see http://www.gnu.org/licenses/.
+//
+cplusplus{{#include "pbc/pbc.h"}}
+
+enum UCACPacketType
+{
+    // establish connection
+    CONN_REQ = 0;
+    CONN_ACK = 1;
+    // tear off connection
+    DISC_REQ = 2;
+    DISC_ACK = 3;
+    // carry playload
+    DATA = 4;
+	// UCAC packet type
+    REDIRECT = 5;	// redirect user-agent between consumer and master
+	OWNER_SK = 6;	// private key a from owner to consumer
+	// challnege-response between consumer and resource
+    CHALLENG = 7;
+    RESPONSE = 8;
+    // print service request-response between owner and consumer
+    PRNT_REQ = 9;
+    PRNT_RES = 10;
+    // file request-response between consumer and resource
+    FILE_REQ = 11;
+    FILE_RES = 12;
+    // authorize request-response between consumer and master via owner
+    AUTZ_REQ = 13;
+    AUTZ_RES = 14;
+    // owner authenticate to master
+    AUTN_REQ = 15;
+    AUTN_RES = 16;
+    // owner submit allowed attributes to master
+    ATTR_REQ = 17;
+    ATTR_RES = 18;
+    // master request Descritive part-1 from attribute
+    DES1_REQ = 19;
+    DES1_RES = 20;
+    // consumer request Descriptive part-2 from attribute
+    DES2_REQ = 21;
+    DES2_RES = 22;
+};
+
+// packet header
+packet UCACPacket
+{
+    int srcAddress;
+    int destAddress;
+    int srcProcId;
+    int destProcId;
+};
+
+// packet with payload
+packet UCACDataPacket extends UCACPacket
+{
+    string payload;
+    pairing_t pairing;
+};
+

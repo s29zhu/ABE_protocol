@@ -1,0 +1,6 @@
+#ifndef __GENERATE_AUTHORIZER_KEYS_H__
+#define __GENERATE_AUTHORIZER_KEYS_H__
+
+extern void generate_authorizer_keys(void);
+
+#endif

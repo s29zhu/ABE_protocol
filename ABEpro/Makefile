@@ -180,7 +180,8 @@ $O/Consumer.o: Consumer.cc \
 $O/ConsumerProcess.o: ConsumerProcess.cc \
 	UCACPacket_m.h \
 	galois.h \
-	grs.h
+	grs.h \
+	message_handle.h
 $O/Master.o: Master.cc \
 	UCACPacket_m.h \
 	galois.h \

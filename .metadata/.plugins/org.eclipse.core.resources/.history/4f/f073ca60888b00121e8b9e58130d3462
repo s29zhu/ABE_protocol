@@ -1,0 +1,36 @@
+#include "UCACPacket_m.h"
+#include "pbc/pbc.h"
+#include <iostream>
+#include <cstring>
+using namespace std;
+class Owner : public cSimpleModule
+{
+  private:
+    cModuleType *srvProcType;
+    pairing_t pairing;
+    element_t g, h, f, owner_pub;
+  protected:
+    virtual void initialize();
+    virtual void handleMessage(cMessage *msg);
+    cModule *mod;
+};
+
+Define_Module(Consumer);
+
+
+void Owner::initialize()
+{
+    srvProcType = cModuleType::find("OwnerProcess");
+    mod = srvProcType->createScheduleInit("consumerProc",this);
+}
+
+void Owner::handleMessage(cMessage *msg)
+{
+    UCACPacket *m = check_and_cast<UCACPacket *>(msg);
+    if(m->isSelfMessage()){
+        EV<<"owner caught selfmessage\n";
+        delete msg;
+    } else{
+        sendDirect(m, mod, "in");
+    }
+}

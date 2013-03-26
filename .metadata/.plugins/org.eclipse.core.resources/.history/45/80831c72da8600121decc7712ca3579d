@@ -1,0 +1,151 @@
+/*
+ *  Master.cc
+ *  Master is also the authorizer
+ *  Feb 2013
+ *  Author:Shasha Zhu
+ */
+
+#include "UCACPacket_m.h"
+#include "pbc/pbc.h"
+
+typedef struct {
+  field_t Fq, Fq2, Eq;
+  int exp2, exp1;
+  int sign1;
+} *a_pairing_data_ptr;
+
+typedef struct {
+  field_ptr field; // The field where the curve is defined.
+  element_t a, b;  // The curve is E: Y^2 = X^3 + a X + b.
+  // cofac == NULL means we're using the whole group of points.
+  // otherwise we're working in the subgroup of order #E / cofac,
+  // where #E is the number of points in E.
+  mpz_ptr cofac;
+  // A generator of E.
+  element_t gen_no_cofac;
+  // A generator of the subgroup.
+  element_t gen;
+  // A non-NULL quotient_cmp means we are working with the quotient group of
+  // order #E / quotient_cmp, and the points are actually coset
+  // representatives. Thus for a comparison, we must multiply by quotient_cmp
+  // before comparing.
+  mpz_ptr quotient_cmp;
+} *curve_data_ptr;
+
+class Master : public cSimpleModule
+{
+  private:
+    cModuleType *srvProcType;
+    pairing_t pairing;
+    pairing_s sp;
+    element_t g, h, f;
+  protected:
+    virtual void initialize();
+    virtual void handleMessage(cMessage *msg);
+};
+
+Define_Module(Master);
+
+void Master::initialize()
+{
+    srvProcType = cModuleType::find("MasterProcess");
+//    pairing_t pairing;
+    element_t beta, beta_inverse;
+    /*generate private and public keys of owner*/
+    char s[16384];
+    char *str_read, *str1;
+   //signed long int temp_share;
+    FILE *fp = stdin;
+
+    fp = fopen("public/a.param", "r");
+    if (!fp)
+        pbc_die("error opening parameter file");
+    size_t count = fread(s, 1, 16384, fp);
+    if(!count)
+        pbc_die("read parameter failure\n");
+    fclose(fp);
+    if(pairing_init_set_buf(pairing, s, count))
+        pbc_die("pairing init failed\n");
+    if(!pairing_is_symmetric(pairing)) pbc_die("pairing is not symmetric\n");
+
+    element_init_G1(g, pairing);
+    element_init_G1(h, pairing);
+    element_init_G1(f, pairing);
+    element_init_Zr(beta, pairing);
+    element_init_Zr(beta_inverse, pairing);
+
+    str_read = (char *)malloc(sizeof(char)*500);
+    str1 = (char *)malloc(sizeof(char)*6);
+    //(G1, g, h, f) is the public key of authorizer
+    //find the generator of the group
+//    element_set(g, (*(curve_data_ptr) (*(*(a_pairing_data_ptr) (*pairing).data).Eq).data).gen);
+    char str_g[512] = "[2080247391869362085132539778201998483380874841515454429046327131439543677740031077799512395854029182308535916504326748475626106457866048357583741668275635, 3462536684798900385254814488714127044393463459789164641468572493723203953888500069097792605858951898418781245583533869595156169194014075269175495278137832]";
+    element_set_str(g, str_g, 10);
+
+    fp = fopen("authorizer/authorizer_secret_key.txt", "r");
+    //read the secret key beta
+     if(!fp)
+         pbc_die("open authorizer secret key file failed");
+     else{
+         while(true){
+             fgets(str_read, 500, fp);
+             strncpy(str1, str_read, 2);
+             if(strstr(str_read, "beta:"))
+                 break;
+         }
+         element_set_str(beta, str_read + 5, 10);
+         fclose(fp);
+     }
+     element_invert(beta_inverse, beta);
+     //h = g^beta
+     element_pow_zn(h, g, beta);
+     //f = g^(1/beta)
+     element_pow_zn(f, g, beta_inverse);
+     element_printf("beta:%B\ng:%B\nh:%B\nf:%B\n", beta, g, h, f);
+    element_clear(beta);
+    element_clear(beta_inverse);
+    fp = fopen("public/authorizer_public_keys.txt", "r");
+    //read the secret key beta
+     if(!fp)
+         pbc_die("open authorizer public key file failed");
+     else{
+         fprintf(fp, "g:");
+         element_out_str(fp, 10, g);
+         fprintf(fp, "\n\nh:");
+         element_out_str(fp, 10, h);
+         fprintf(fp, "\n\nf:");
+         element_out_str(fp, 10, f);
+         fclose(fp);
+     }
+
+}
+
+void Master::handleMessage(cMessage *msg)
+{
+    UCACPacket *pk = check_and_cast<UCACPacket *>(msg);
+
+ //   element_printf("%B\n",ele);
+    // if receive connection request, create a new process (module)
+
+    if (pk->getKind()==CONN_REQ)
+    {
+        cModule *mod = srvProcType->createScheduleInit("masterProc",this);
+        EV << "CONN_REQ: Master created process ID = " << mod->getId() << endl;
+        sendDirect(pk, mod, "in");
+    }
+    else
+    // otherwise the process has already created, so redirect to that process.
+    {
+        int serverProcId = pk->getDestProcId();
+        EV << "Master is redirecting msg to process ID = " << serverProcId << endl;
+        cModule *mod = simulation.getModule(serverProcId);
+        // unless cannot find the destination process, destroy the packet
+        if (!mod) {
+            EV << " That process already exited, deleting msg\n";
+            delete pk;
+        } else {
+            sendDirect(pk, mod, "in");
+        }
+    }
+}
+

@@ -1,0 +1,6 @@
+#ifndef __GENERATE_OWNER_KEYS_H__
+#define __GENERATE_OWNER_KEYS_H__
+
+void generate_owner_keys(void);
+
+#endif

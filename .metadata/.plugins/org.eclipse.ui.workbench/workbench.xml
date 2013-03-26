@@ -1,0 +1,671 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workbench progressCount="23" version="2.0">
+<workbenchAdvisor/>
+<window height="768" maximized="true" width="996" x="105" y="111">
+<fastViewData fastViewLocation="1024"/>
+<perspectiveBar>
+<itemSize x="160"/>
+</perspectiveBar>
+<coolbarLayout>
+<coolItem id="group.file" itemType="typeGroupMarker"/>
+<coolItem id="org.eclipse.ui.workbench.file" itemType="typeToolBarContribution" x="166" y="30"/>
+<coolItem id="additions" itemType="typeGroupMarker"/>
+<coolItem id="org.eclipse.cdt.ui.CElementCreationActionSet" itemType="typeToolBarContribution" x="156" y="30"/>
+<coolItem id="org.eclipse.cdt.ui.buildConfigActionSet" itemType="typeToolBarContribution" x="82" y="30"/>
+<coolItem id="org.eclipse.debug.ui.launchActionSet" itemType="typeToolBarContribution" x="120" y="30"/>
+<coolItem id="org.eclipse.search.searchActionSet" itemType="typeToolBarContribution" x="132" y="30"/>
+<coolItem id="org.eclipse.ui.edit.text.actionSet.presentation" itemType="typeToolBarContribution" x="40" y="30"/>
+<coolItem id="org.omnetpp.neddoc.toolbars.neddocToolbar" itemType="typeToolBarContribution" x="40" y="30"/>
+<coolItem id="group.nav" itemType="typeGroupMarker"/>
+<coolItem id="org.eclipse.ui.workbench.navigate" itemType="typeToolBarContribution" x="184" y="30"/>
+<coolItem id="group.editor" itemType="typeGroupMarker"/>
+<coolItem id="org.omnetpp.msg.editor.MsgEditor" itemType="typePlaceholder" x="-1" y="-1"/>
+<coolItem id="org.omnetpp.ned.editor" itemType="typePlaceholder" x="130" y="30"/>
+<coolItem id="org.eclipse.ui.DefaultTextEditor" itemType="typePlaceholder" x="-1" y="-1"/>
+<coolItem id="org.eclipse.cdt.make.editor" itemType="typeToolBarContribution" x="-1" y="-1"/>
+<coolItem id="org.eclipse.cdt.ui.editor.CEditor" itemType="typeToolBarContribution" x="-1" y="-1"/>
+<coolItem id="group.help" itemType="typeGroupMarker"/>
+<coolItem id="org.eclipse.ui.workbench.help" itemType="typeToolBarContribution" x="-1" y="-1"/>
+</coolbarLayout>
+<page aggregateWorkingSetId="Aggregate for window 1361821865432" focus="true" label="Workspace - Simulation">
+<editors>
+<editorArea activeWorkbook="DefaultEditorWorkbook">
+<info part="DefaultEditorWorkbook">
+<folder appearance="1" expanded="2">
+<presentation id="org.eclipse.ui.presentations.WorkbenchPresentationFactory">
+<part id="3"/>
+<part id="0"/>
+<part id="4"/>
+<part id="2"/>
+<part id="1"/>
+<part id="5"/>
+<part id="6"/>
+<part id="7"/>
+<part id="8"/>
+</presentation>
+</folder>
+</info>
+</editorArea>
+<editor id="org.eclipse.cdt.ui.editor.CEditor" name="MasterProcess.cc" partName="MasterProcess.cc" path="/home/s29zhu/researchproject/project/UCAC/ABEpro/MasterProcess.cc" title="MasterProcess.cc" tooltip="ABEpro/MasterProcess.cc" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/ABEpro/MasterProcess.cc"/>
+<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="71" selectionTopPixel="0"/>
+</editor>
+<editor id="org.eclipse.cdt.ui.editor.CEditor" name="ConsumerProcess.cc" partName="ConsumerProcess.cc" path="/home/s29zhu/researchproject/project/UCAC/ABEpro/ConsumerProcess.cc" title="ConsumerProcess.cc" tooltip="ABEpro/ConsumerProcess.cc" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/ABEpro/ConsumerProcess.cc"/>
+<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="19936" selectionTopPixel="3665"/>
+</editor>
+<editor id="org.eclipse.cdt.ui.editor.CEditor" name="ResourceProcess.cc" partName="ResourceProcess.cc" path="/home/s29zhu/researchproject/project/UCAC/ABEpro/ResourceProcess.cc" title="ResourceProcess.cc" tooltip="ABEpro/ResourceProcess.cc" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/ABEpro/ResourceProcess.cc"/>
+<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="2366" selectionTopPixel="1304"/>
+</editor>
+<editor activePart="true" focus="true" id="org.eclipse.cdt.ui.editor.CEditor" name="OwnerProcess.cc" partName="OwnerProcess.cc" path="/home/s29zhu/researchproject/project/UCAC/ABEpro/OwnerProcess.cc" title="OwnerProcess.cc" tooltip="ABEpro/OwnerProcess.cc" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/ABEpro/OwnerProcess.cc"/>
+<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="7880" selectionTopPixel="5435"/>
+</editor>
+<editor id="org.eclipse.cdt.ui.editor.CEditor" name="AttributeProcess.cc" partName="AttributeProcess.cc" path="/home/s29zhu/researchproject/project/UCAC/ABEpro/AttributeProcess.cc" title="AttributeProcess.cc" tooltip="ABEpro/AttributeProcess.cc" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/ABEpro/AttributeProcess.cc"/>
+<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="8506" selectionTopPixel="2871"/>
+</editor>
+<editor id="org.eclipse.cdt.ui.editor.CEditor" name="message_handle.cc" partName="message_handle.cc" path="/home/s29zhu/researchproject/project/UCAC/ABEpro/message_handle.cc" title="message_handle.cc" tooltip="ABEpro/message_handle.cc" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/ABEpro/message_handle.cc"/>
+<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="702" selectionTopPixel="67"/>
+</editor>
+<editor id="org.eclipse.cdt.ui.editor.CEditor" name="grs.cc" partName="grs.cc" path="/home/s29zhu/researchproject/project/UCAC/ABEpro/grs.cc" title="grs.cc" tooltip="ABEpro/grs.cc" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/ABEpro/grs.cc"/>
+<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="7687" selectionTopPixel="4295"/>
+</editor>
+<editor id="org.eclipse.cdt.ui.editor.CEditor" name="poly.cc" partName="poly.cc" path="/home/s29zhu/researchproject/project/UCAC/ABEpro/poly.cc" title="poly.cc" tooltip="ABEpro/poly.cc" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/ABEpro/poly.cc"/>
+<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="4226" selectionTopPixel="198"/>
+</editor>
+<editor id="org.eclipse.cdt.ui.editor.CEditor" name="poly.h" partName="poly.h" path="/home/s29zhu/researchproject/project/UCAC/ABEpro/poly.h" title="poly.h" tooltip="ABEpro/poly.h" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/ABEpro/poly.h"/>
+<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="0" selectionTopPixel="0"/>
+</editor>
+</editors>
+<views>
+<view id="org.eclipse.ui.navigator.ProjectExplorer" partName="Project Explorer">
+<viewState CommonNavigator.LINKING_ENABLED="0" org.eclipse.cdt.ui.cview.groupincludes="false" org.eclipse.cdt.ui.cview.groupmacros="false" org.eclipse.cdt.ui.editor.CUChildren="true" org.eclipse.ui.navigator.resources.workingSets.showTopLevelWorkingSets="0"/>
+</view>
+<view id="org.omnetpp.inifile.ModuleHierarchy" partName="Module Hierarchy">
+<viewState/>
+</view>
+<view id="org.eclipse.ui.views.PropertySheet" partName="Properties">
+<viewState/>
+</view>
+<view id="org.eclipse.debug.ui.MemoryView" partName="Memory">
+<viewState/>
+</view>
+<view id="org.eclipse.cdt.make.ui.views.MakeView" partName="Make Target"/>
+<view id="org.eclipse.debug.ui.DebugView" partName="Debug">
+<viewState/>
+</view>
+<view id="org.omnetpp.inifile.NedInheritance" partName="NED Inheritance">
+<viewState/>
+</view>
+<view id="org.eclipse.ui.views.ProblemView" partName="Problems">
+<viewState PRIMARY_SORT_FIELD="org.eclipse.ui.ide.severityAndDescriptionField" categoryGroup="org.eclipse.ui.ide.severity" markerContentGenerator="org.eclipse.ui.ide.problemsGenerator" partName="Problems">
+<expanded>
+<category IMemento.internal.id="Warnings (15 items)"/>
+<category IMemento.internal.id="Errors"/>
+<category IMemento.internal.id="Warnings"/>
+</expanded>
+<columnWidths org.eclipse.ui.ide.locationField="500" org.eclipse.ui.ide.markerType="294" org.eclipse.ui.ide.pathField="140" org.eclipse.ui.ide.resourceField="234" org.eclipse.ui.ide.severityAndDescriptionField="1551"/>
+<visible IMemento.internal.id="org.eclipse.ui.ide.severityAndDescriptionField"/>
+<visible IMemento.internal.id="org.eclipse.ui.ide.resourceField"/>
+<visible IMemento.internal.id="org.eclipse.ui.ide.pathField"/>
+<visible IMemento.internal.id="org.eclipse.ui.ide.locationField"/>
+<visible IMemento.internal.id="org.eclipse.ui.ide.markerType"/>
+</viewState>
+</view>
+<view id="org.eclipse.ui.console.ConsoleView" partName="Console">
+<viewState/>
+</view>
+<view id="org.eclipse.cdt.debug.ui.executablesView" partName="Executables">
+<viewState/>
+</view>
+<view id="org.omnetpp.inifile.ModuleParameters" partName="NED Parameters">
+<viewState/>
+</view>
+<view id="org.eclipse.ui.views.TaskList" partName="Tasks">
+<viewState PRIMARY_SORT_FIELD="org.eclipse.ui.ide.completionField" categoryGroup="none" markerContentGenerator="org.eclipse.ui.ide.tasksGenerator" partName="Tasks">
+<columnWidths org.eclipse.ui.ide.completionField="40" org.eclipse.ui.ide.descriptionField="350" org.eclipse.ui.ide.locationField="105" org.eclipse.ui.ide.markerType="1066" org.eclipse.ui.ide.pathField="140" org.eclipse.ui.ide.priorityField="35" org.eclipse.ui.ide.resourceField="105"/>
+<visible IMemento.internal.id="org.eclipse.ui.ide.completionField"/>
+<visible IMemento.internal.id="org.eclipse.ui.ide.priorityField"/>
+<visible IMemento.internal.id="org.eclipse.ui.ide.descriptionField"/>
+<visible IMemento.internal.id="org.eclipse.ui.ide.resourceField"/>
+<visible IMemento.internal.id="org.eclipse.ui.ide.pathField"/>
+<visible IMemento.internal.id="org.eclipse.ui.ide.locationField"/>
+<visible IMemento.internal.id="org.eclipse.ui.ide.markerType"/>
+</viewState>
+</view>
+<view id="org.eclipse.ui.views.ContentOutline" partName="Outline">
+<viewState/>
+</view>
+</views>
+<perspectives activePart="org.eclipse.cdt.ui.editor.CEditor" activePerspective="org.omnetpp.main.OmnetppPerspective">
+<perspective editorAreaTrimState="2" editorAreaVisible="1" fixed="0" version="0.016">
+<descriptor class="org.omnetpp.ide.PerspectiveFactory" id="org.omnetpp.main.OmnetppPerspective" label="Simulation"/>
+<alwaysOnActionSet id="org.eclipse.egit.ui.navigation"/>
+<alwaysOnActionSet id="org.eclipse.ui.cheatsheets.actionSet"/>
+<alwaysOnActionSet id="org.eclipse.search.searchActionSet"/>
+<alwaysOnActionSet id="org.eclipse.ui.edit.text.actionSet.annotationNavigation"/>
+<alwaysOnActionSet id="org.eclipse.ui.edit.text.actionSet.navigation"/>
+<alwaysOnActionSet id="org.eclipse.ui.edit.text.actionSet.convertLineDelimitersTo"/>
+<alwaysOnActionSet id="org.eclipse.ui.externaltools.ExternalToolsSet"/>
+<alwaysOnActionSet id="org.eclipse.ui.actionSet.keyBindings"/>
+<alwaysOnActionSet id="org.eclipse.ui.actionSet.openFiles"/>
+<alwaysOnActionSet id="org.omnetpp.ned.ActionSet"/>
+<alwaysOnActionSet id="org.eclipse.ui.NavigateActionSet"/>
+<alwaysOnActionSet id="org.eclipse.debug.ui.launchActionSet"/>
+<alwaysOnActionSet id="org.eclipse.debug.ui.debugActionSet"/>
+<show_view_action id="org.eclipse.ui.views.ContentOutline"/>
+<show_view_action id="org.eclipse.ui.views.PropertySheet"/>
+<show_view_action id="org.eclipse.ui.views.ProblemView"/>
+<show_view_action id="org.eclipse.ui.navigator.ProjectExplorer"/>
+<show_view_action id="org.eclipse.ui.views.TaskList"/>
+<show_view_action id="org.eclipse.ui.views.ProgressView"/>
+<show_view_action id="org.omnetpp.inifile.ModuleParameters"/>
+<show_view_action id="org.omnetpp.inifile.ModuleHierarchy"/>
+<show_view_action id="org.omnetpp.inifile.NedInheritance"/>
+<show_view_action id="org.omnetpp.scave.DatasetView"/>
+<show_view_action id="org.omnetpp.scave.VectorBrowserView"/>
+<show_view_action id="org.omnetpp.sequencechart.editors.SequenceChartView"/>
+<show_view_action id="org.omnetpp.eventlogtable.editors.EventLogTableView"/>
+<new_wizard_action id="org.omnetpp.main.wizards.NewOmnetppProject"/>
+<new_wizard_action id="org.omnetpp.cdt.wizards.NewOmnetppCCProject"/>
+<new_wizard_action id="org.omnetpp.ned.editor.wizards.NewSimulation"/>
+<new_wizard_action id="org.omnetpp.ned.editor.wizards.NewSimpleModule"/>
+<new_wizard_action id="org.omnetpp.ned.editor.wizards.NewCompoundModule"/>
+<new_wizard_action id="org.omnetpp.ned.editor.wizards.NewNetwork"/>
+<new_wizard_action id="org.omnetpp.ned.editor.wizards.NewNedFile"/>
+<new_wizard_action id="org.omnetpp.msg.editor.wizards.NewMsgFile"/>
+<new_wizard_action id="org.omnetpp.inifile.editor.wizards.NewIniFile"/>
+<new_wizard_action id="org.omnetpp.scave.wizards.NewScaveFile"/>
+<new_wizard_action id="org.eclipse.ui.wizards.new.folder"/>
+<new_wizard_action id="org.eclipse.ui.wizards.new.file"/>
+<new_wizard_action id="org.eclipse.ui.editors.wizards.UntitledTextFileWizard"/>
+<new_wizard_action id="org.omnetpp.common.wizards.NewWizard"/>
+<new_wizard_action id="org.omnetpp.cdt.wizards.NewOmnetppClass"/>
+<perspective_action id="org.eclipse.cdt.ui.CPerspective"/>
+<perspective_action id="org.eclipse.ui.resourcePerspective"/>
+<perspective_action id="org.omnetpp.main.OmnetppPerspective"/>
+<hide_toolbar_item_id id="org.eclipse.ui.edit.text.toggleShowSelectedElementOnly"/>
+<view id="org.eclipse.ui.views.ProblemView"/>
+<view id="org.omnetpp.inifile.ModuleHierarchy"/>
+<view id="org.omnetpp.inifile.ModuleParameters"/>
+<view id="org.omnetpp.inifile.NedInheritance"/>
+<view id="org.eclipse.ui.console.ConsoleView"/>
+<view id="org.eclipse.ui.navigator.ProjectExplorer"/>
+<fastViewBars/>
+<layout>
+<mainWindow>
+<info folder="true" part="left">
+<folder appearance="2" expanded="2">
+<page content="org.eclipse.ui.views.ResourceNavigator" label="LabelNotFound"/>
+<presentation id="org.eclipse.ui.presentations.WorkbenchPresentationFactory"/>
+</folder>
+</info>
+<info folder="true" part="org.eclipse.ui.internal.ViewStack@c83a25" ratio="0.7495049" ratioLeft="757" ratioRight="253" relationship="2" relative="left">
+<folder appearance="2" expanded="2">
+<page content="org.eclipse.help.ui.HelpView" label="LabelNotFound"/>
+<page content="org.eclipse.ui.internal.introview" label="LabelNotFound"/>
+<page content="org.eclipse.ui.cheatsheets.views.CheatSheetView" label="LabelNotFound"/>
+<presentation id="org.eclipse.ui.presentations.WorkbenchPresentationFactory"/>
+</folder>
+</info>
+<info folder="true" part="org.eclipse.ui.internal.ViewStack@4812eb99" ratio="0.24950495" ratioLeft="252" ratioRight="758" relationship="2" relative="left">
+<folder activePageID="org.eclipse.ui.navigator.ProjectExplorer" appearance="2" expanded="2">
+<page content="org.eclipse.ui.navigator.ProjectExplorer" label="Project Explorer"/>
+<presentation id="org.eclipse.ui.presentations.WorkbenchPresentationFactory">
+<part id="0"/>
+</presentation>
+</folder>
+</info>
+<info folder="true" part="bottom" ratio="0.6002045" ratioLeft="587" ratioRight="391" relationship="4" relative="org.eclipse.ui.internal.ViewStack@4812eb99">
+<folder activePageID="org.eclipse.ui.console.ConsoleView" appearance="2" expanded="2">
+<page content="org.eclipse.ui.views.ProblemView" label="Problems"/>
+<page content="org.omnetpp.inifile.ModuleHierarchy" label="Module Hierarchy"/>
+<page content="org.omnetpp.inifile.ModuleParameters" label="NED Parameters"/>
+<page content="org.omnetpp.inifile.NedInheritance" label="NED Inheritance"/>
+<page content="org.eclipse.ui.console.ConsoleView" label="Console"/>
+<page content="org.omnetpp.main.NewVersionView" label="LabelNotFound"/>
+<page content="org.eclipse.ui.views.TaskList" label="LabelNotFound"/>
+<page content="org.eclipse.ui.views.BookmarkView" label="LabelNotFound"/>
+<page content="org.eclipse.ui.views.ProgressView" label="LabelNotFound"/>
+<page content="org.eclipse.debug.ui.DebugView" label="LabelNotFound"/>
+<presentation id="org.eclipse.ui.presentations.WorkbenchPresentationFactory">
+<part id="0"/>
+<part id="1"/>
+<part id="2"/>
+<part id="3"/>
+<part id="4"/>
+</presentation>
+</folder>
+</info>
+<info part="org.eclipse.ui.editorss" ratio="0.10574837" ratioLeft="195" ratioRight="1649" relationship="2" relative="org.eclipse.ui.internal.ViewStack@4812eb99"/>
+<info folder="true" part="leftbottom" ratio="0.5" ratioLeft="332" ratioRight="332" relationship="4" relative="left">
+<folder appearance="2" expanded="2">
+<page content="org.eclipse.ui.views.PropertySheet" label="LabelNotFound"/>
+<page content="org.eclipse.ui.views.ContentOutline" label="LabelNotFound"/>
+<presentation id="org.eclipse.ui.presentations.WorkbenchPresentationFactory"/>
+</folder>
+</info>
+</mainWindow>
+</layout>
+</perspective>
+<perspective editorAreaTrimState="2" editorAreaVisible="1" fixed="0" version="0.016">
+<descriptor class="org.eclipse.debug.internal.ui.DebugPerspectiveFactory" id="org.eclipse.debug.ui.DebugPerspective" label="Debug"/>
+<alwaysOnActionSet id="org.eclipse.egit.ui.navigation"/>
+<alwaysOnActionSet id="org.eclipse.ui.cheatsheets.actionSet"/>
+<alwaysOnActionSet id="org.eclipse.search.searchActionSet"/>
+<alwaysOnActionSet id="org.eclipse.ui.edit.text.actionSet.annotationNavigation"/>
+<alwaysOnActionSet id="org.eclipse.ui.edit.text.actionSet.navigation"/>
+<alwaysOnActionSet id="org.eclipse.ui.edit.text.actionSet.convertLineDelimitersTo"/>
+<alwaysOnActionSet id="org.eclipse.ui.externaltools.ExternalToolsSet"/>
+<alwaysOnActionSet id="org.eclipse.ui.actionSet.keyBindings"/>
+<alwaysOnActionSet id="org.eclipse.ui.actionSet.openFiles"/>
+<alwaysOnActionSet id="org.omnetpp.ned.ActionSet"/>
+<alwaysOnActionSet id="org.eclipse.debug.ui.launchActionSet"/>
+<alwaysOnActionSet id="org.eclipse.cdt.debug.ui.debugActionSet"/>
+<alwaysOnActionSet id="org.eclipse.ui.NavigateActionSet"/>
+<alwaysOnActionSet id="org.eclipse.debug.ui.breakpointActionSet"/>
+<alwaysOnActionSet id="org.eclipse.debug.ui.debugActionSet"/>
+<show_view_action id="org.eclipse.debug.ui.DebugView"/>
+<show_view_action id="org.eclipse.debug.ui.VariableView"/>
+<show_view_action id="org.eclipse.debug.ui.BreakpointView"/>
+<show_view_action id="org.eclipse.debug.ui.ExpressionView"/>
+<show_view_action id="org.eclipse.ui.views.ContentOutline"/>
+<show_view_action id="org.eclipse.ui.console.ConsoleView"/>
+<show_view_action id="org.eclipse.ui.views.TaskList"/>
+<show_view_action id="org.eclipse.cdt.debug.ui.SignalsView"/>
+<show_view_action id="org.eclipse.debug.ui.RegisterView"/>
+<show_view_action id="org.eclipse.debug.ui.ModuleView"/>
+<show_view_action id="org.eclipse.debug.ui.MemoryView"/>
+<show_view_action id="org.eclipse.ui.views.ProblemView"/>
+<show_view_action id="org.eclipse.cdt.debug.ui.executablesView"/>
+<show_view_action id="org.eclipse.cdt.dsf.gdb.ui.tracecontrol.view"/>
+<show_view_action id="org.eclipse.cdt.dsf.debug.ui.disassembly.view"/>
+<show_view_action id="org.eclipse.pde.runtime.LogView"/>
+<perspective_action id="org.eclipse.cdt.ui.CPerspective"/>
+<perspective_action id="org.omnetpp.main.OmnetppPerspective"/>
+<hide_toolbar_item_id id="org.eclipse.ui.edit.text.toggleShowSelectedElementOnly"/>
+<view id="org.eclipse.ui.console.ConsoleView"/>
+<view id="org.eclipse.ui.views.TaskList"/>
+<view id="org.eclipse.ui.views.ProblemView"/>
+<view id="org.eclipse.cdt.debug.ui.executablesView"/>
+<view id="org.eclipse.debug.ui.MemoryView"/>
+<view id="org.eclipse.debug.ui.DebugView"/>
+<fastViewBars/>
+<layout>&#x0A;<mainWindow>&#x0A;<info folder="true" part="org.eclipse.debug.internal.ui.NavigatorFolderView">&#x0A;<folder appearance="2" expanded="2">&#x0A;<page content="org.eclipse.ui.views.ResourceNavigator" label="LabelNotFound"/>
+<presentation id="org.eclipse.ui.presentations.WorkbenchPresentationFactory"/>
+</folder>
+</info>
+<info folder="true" part="stickyFolderRight" ratio="0.74986464" ratioLeft="1385" ratioRight="462" relationship="2" relative="org.eclipse.debug.internal.ui.NavigatorFolderView">&#x0A;<folder appearance="2" expanded="2">&#x0A;<page content="org.eclipse.help.ui.HelpView" label="LabelNotFound"/>
+<page content="org.eclipse.ui.internal.introview" label="LabelNotFound"/>
+<page content="org.eclipse.ui.cheatsheets.views.CheatSheetView" label="LabelNotFound"/>
+</folder>
+</info>
+<info folder="true" part="org.eclipse.debug.internal.ui.ConsoleFolderView" ratio="0.62883437" ratioLeft="615" ratioRight="363" relationship="4" relative="org.eclipse.debug.internal.ui.NavigatorFolderView">&#x0A;<folder activePageID="org.eclipse.ui.console.ConsoleView" appearance="2" expanded="2">&#x0A;<page content="org.eclipse.ui.console.ConsoleView" label="Console"/>
+<page content="org.eclipse.ui.views.TaskList" label="Tasks"/>
+<page content="org.eclipse.ui.views.ProblemView" label="Problems"/>
+<page content="org.eclipse.cdt.debug.ui.executablesView" label="Executables"/>
+<page content="org.eclipse.debug.ui.MemoryView" label="Memory"/>
+<page content="org.eclipse.debug.ui.DebugView" label="Debug"/>
+<page content="org.eclipse.ui.views.BookmarkView" label="LabelNotFound"/>
+<page content="org.eclipse.ui.views.PropertySheet" label="LabelNotFound"/>
+<presentation id="org.eclipse.ui.presentations.WorkbenchPresentationFactory">&#x0A;<part id="0"/>
+<part id="1"/>
+<part id="2"/>
+<part id="3"/>
+<part id="4"/>
+<part id="5"/>
+</presentation>
+</folder>
+</info>
+<info part="org.eclipse.ui.editorss" ratio="0.4489796" ratioLeft="330" ratioRight="405" relationship="4" relative="org.eclipse.debug.internal.ui.NavigatorFolderView"/>
+<info folder="true" part="org.eclipse.debug.internal.ui.OutlineFolderView" ratio="0.74986464" ratioLeft="1385" ratioRight="462" relationship="2" relative="org.eclipse.ui.editorss">&#x0A;<folder appearance="2" expanded="2">&#x0A;<page content="org.eclipse.ui.views.ContentOutline" label="LabelNotFound"/>
+<page content="org.eclipse.cdt.dsf.gdb.ui.tracecontrol.view" label="LabelNotFound"/>
+<page content="org.eclipse.cdt.dsf.debug.ui.disassembly.view" label="LabelNotFound"/>
+<presentation id="org.eclipse.ui.presentations.WorkbenchPresentationFactory"/>
+</folder>
+</info>
+<info folder="true" part="org.eclipse.debug.internal.ui.ToolsFolderView" ratio="0.4997293" ratioLeft="923" ratioRight="924" relationship="2" relative="org.eclipse.debug.internal.ui.NavigatorFolderView">&#x0A;<folder appearance="2" expanded="2">&#x0A;<page content="org.eclipse.debug.ui.VariableView" label="LabelNotFound"/>
+<page content="org.eclipse.debug.ui.BreakpointView" label="LabelNotFound"/>
+<page content="org.eclipse.debug.ui.ExpressionView" label="LabelNotFound"/>
+<page content="org.eclipse.debug.ui.RegisterView" label="LabelNotFound"/>
+<page content="org.eclipse.cdt.debug.ui.SignalsView" label="LabelNotFound"/>
+<page content="org.eclipse.debug.ui.ModuleView" label="LabelNotFound"/>
+<presentation id="org.eclipse.ui.presentations.WorkbenchPresentationFactory"/>
+</folder>
+</info>
+</mainWindow>
+</layout>
+</perspective>
+<perspective editorAreaTrimState="2" editorAreaVisible="1" fixed="0" version="0.016">
+<descriptor class="org.eclipse.cdt.internal.ui.CPerspectiveFactory" id="org.eclipse.cdt.ui.CPerspective" label="C/C++"/>
+<alwaysOnActionSet id="org.eclipse.egit.ui.navigation"/>
+<alwaysOnActionSet id="org.eclipse.ui.cheatsheets.actionSet"/>
+<alwaysOnActionSet id="org.eclipse.search.searchActionSet"/>
+<alwaysOnActionSet id="org.eclipse.ui.edit.text.actionSet.annotationNavigation"/>
+<alwaysOnActionSet id="org.eclipse.ui.edit.text.actionSet.navigation"/>
+<alwaysOnActionSet id="org.eclipse.ui.edit.text.actionSet.convertLineDelimitersTo"/>
+<alwaysOnActionSet id="org.eclipse.ui.externaltools.ExternalToolsSet"/>
+<alwaysOnActionSet id="org.eclipse.ui.actionSet.keyBindings"/>
+<alwaysOnActionSet id="org.eclipse.ui.actionSet.openFiles"/>
+<alwaysOnActionSet id="org.omnetpp.ned.ActionSet"/>
+<alwaysOnActionSet id="org.eclipse.cdt.ui.SearchActionSet"/>
+<alwaysOnActionSet id="org.eclipse.cdt.ui.CElementCreationActionSet"/>
+<alwaysOnActionSet id="org.eclipse.ui.NavigateActionSet"/>
+<alwaysOnActionSet id="org.eclipse.debug.ui.breakpointActionSet"/>
+<alwaysOnActionSet id="org.eclipse.cdt.make.ui.makeTargetActionSet"/>
+<alwaysOnActionSet id="org.eclipse.debug.ui.launchActionSet"/>
+<alwaysOnActionSet id="org.eclipse.cdt.ui.buildConfigActionSet"/>
+<alwaysOnActionSet id="org.eclipse.cdt.ui.NavigationActionSet"/>
+<alwaysOnActionSet id="org.eclipse.cdt.ui.OpenActionSet"/>
+<alwaysOnActionSet id="org.eclipse.cdt.ui.CodingActionSet"/>
+<alwaysOnActionSet id="org.eclipse.ui.edit.text.actionSet.presentation"/>
+<alwaysOnActionSet id="org.eclipse.debug.ui.profileActionSet"/>
+<alwaysOnActionSet id="org.eclipse.debug.ui.debugActionSet"/>
+<show_view_action id="org.eclipse.ui.console.ConsoleView"/>
+<show_view_action id="org.eclipse.search.ui.views.SearchView"/>
+<show_view_action id="org.eclipse.ui.views.ContentOutline"/>
+<show_view_action id="org.eclipse.ui.views.ProblemView"/>
+<show_view_action id="org.eclipse.cdt.ui.CView"/>
+<show_view_action id="org.eclipse.ui.views.ResourceNavigator"/>
+<show_view_action id="org.eclipse.ui.views.PropertySheet"/>
+<show_view_action id="org.eclipse.ui.views.TaskList"/>
+<show_view_action id="org.eclipse.cdt.codan.internal.ui.views.ProblemDetails"/>
+<show_view_action id="org.eclipse.cdt.make.ui.views.MakeView"/>
+<show_view_action id="org.eclipse.ui.navigator.ProjectExplorer"/>
+<show_view_action id="org.eclipse.cdt.ui.includeBrowser"/>
+<new_wizard_action id="org.eclipse.cdt.ui.wizards.ConvertToMakeWizard"/>
+<new_wizard_action id="org.eclipse.cdt.ui.wizards.NewMakeFromExisting"/>
+<new_wizard_action id="org.eclipse.cdt.ui.wizards.NewCWizard1"/>
+<new_wizard_action id="org.eclipse.cdt.ui.wizards.NewCWizard2"/>
+<new_wizard_action id="org.eclipse.cdt.ui.wizards.NewSourceFolderCreationWizard"/>
+<new_wizard_action id="org.eclipse.cdt.ui.wizards.NewFolderCreationWizard"/>
+<new_wizard_action id="org.eclipse.cdt.ui.wizards.NewSourceFileCreationWizard"/>
+<new_wizard_action id="org.eclipse.cdt.ui.wizards.NewHeaderFileCreationWizard"/>
+<new_wizard_action id="org.eclipse.cdt.ui.wizards.NewFileCreationWizard"/>
+<new_wizard_action id="org.eclipse.cdt.ui.wizards.NewClassCreationWizard"/>
+<new_wizard_action id="org.omnetpp.cdt.wizards.NewOmnetppClass"/>
+<new_wizard_action id="org.omnetpp.cdt.wizards.NewOmnetppCCProject"/>
+<new_wizard_action id="org.omnetpp.ned.editor.wizards.NewSimpleModule"/>
+<perspective_action id="org.eclipse.debug.ui.DebugPerspective"/>
+<perspective_action id="org.eclipse.team.ui.TeamSynchronizingPerspective"/>
+<perspective_action id="org.omnetpp.main.OmnetppPerspective"/>
+<hide_toolbar_item_id id="org.eclipse.ui.edit.text.toggleShowSelectedElementOnly"/>
+<view id="org.eclipse.ui.navigator.ProjectExplorer"/>
+<view id="org.eclipse.ui.views.ProblemView"/>
+<view id="org.eclipse.ui.views.TaskList"/>
+<view id="org.eclipse.ui.console.ConsoleView"/>
+<view id="org.eclipse.ui.views.PropertySheet"/>
+<view id="org.eclipse.debug.ui.DebugView"/>
+<view id="org.eclipse.ui.views.ContentOutline"/>
+<view id="org.eclipse.cdt.make.ui.views.MakeView"/>
+<fastViewBars/>
+<layout>&#x0A;<mainWindow>&#x0A;<info folder="true" part="topLeft">&#x0A;<folder activePageID="org.eclipse.ui.navigator.ProjectExplorer" appearance="2" expanded="2">&#x0A;<page content="org.eclipse.ui.navigator.ProjectExplorer" label="Project Explorer"/>
+<page content="org.eclipse.cdt.ui.CView" label="LabelNotFound"/>
+<page content="org.eclipse.ui.views.ResourceNavigator" label="LabelNotFound"/>
+<page content="org.eclipse.ui.views.BookmarkView" label="LabelNotFound"/>
+<presentation id="org.eclipse.ui.presentations.WorkbenchPresentationFactory">&#x0A;<part id="0"/>
+</presentation>
+</folder>
+</info>
+<info folder="true" part="stickyFolderRight" ratio="0.74986464" ratioLeft="1385" ratioRight="462" relationship="2" relative="topLeft">&#x0A;<folder appearance="2" expanded="2">&#x0A;<page content="org.eclipse.help.ui.HelpView" label="LabelNotFound"/>
+<page content="org.eclipse.ui.internal.introview" label="LabelNotFound"/>
+<page content="org.eclipse.ui.cheatsheets.views.CheatSheetView" label="LabelNotFound"/>
+</folder>
+</info>
+<info part="org.eclipse.ui.editorss" ratio="0.09978308" ratioLeft="184" ratioRight="1660" relationship="2" relative="topLeft"/>
+<info folder="true" part="bottom" ratio="0.5388548" ratioLeft="527" ratioRight="451" relationship="4" relative="org.eclipse.ui.editorss">&#x0A;<folder activePageID="org.eclipse.ui.console.ConsoleView" appearance="2" expanded="2">&#x0A;<page content="org.eclipse.ui.views.ProblemView" label="Problems"/>
+<page content="org.eclipse.ui.views.TaskList" label="Tasks"/>
+<page content="org.eclipse.ui.console.ConsoleView" label="Console"/>
+<page content="org.eclipse.ui.views.PropertySheet" label="Properties"/>
+<page content="org.eclipse.debug.ui.DebugView" label="Debug"/>
+<presentation id="org.eclipse.ui.presentations.WorkbenchPresentationFactory">&#x0A;<part id="0"/>
+<part id="1"/>
+<part id="2"/>
+<part id="3"/>
+<part id="4"/>
+</presentation>
+</folder>
+</info>
+<info folder="true" part="topRight" ratio="0.89799637" ratioLeft="1479" ratioRight="168" relationship="2" relative="org.eclipse.ui.editorss">&#x0A;<folder activePageID="org.eclipse.ui.views.ContentOutline" appearance="2" expanded="2">&#x0A;<page content="org.eclipse.ui.views.ContentOutline" label="Outline"/>
+<page content="org.eclipse.cdt.make.ui.views.MakeView" label="Make Target"/>
+<presentation id="org.eclipse.ui.presentations.WorkbenchPresentationFactory">&#x0A;<part id="0"/>
+<part id="1"/>
+</presentation>
+</folder>
+</info>
+</mainWindow>
+</layout>
+</perspective>
+</perspectives>
+<workingSets/>
+<navigationHistory>
+<editors>
+<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" path="/ABEpro/grs.cc"/>
+<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" path="/ABEpro/ConsumerProcess.cc"/>
+<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" path="/ABEpro/OwnerProcess.cc"/>
+<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" path="/ABEpro/poly.cc"/>
+<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" path="/ABEpro/message_handle.cc"/>
+<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" path="/ABEpro/grs.cc"/>
+<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" path="/ABEpro/poly.cc"/>
+<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" path="/ABEpro/poly.h"/>
+</editors>
+<item historyLabel="ConsumerProcess.cc" index="1">
+<position info="not_deleted" x="18539" y="0"/>
+</item>
+<item historyLabel="ConsumerProcess.cc" index="1">
+<position info="not_deleted" x="19819" y="0"/>
+</item>
+<item historyLabel="OwnerProcess.cc" index="2">
+<position info="not_deleted" x="235" y="828"/>
+</item>
+<item historyLabel="poly.cc" index="3">
+<position info="not_deleted" x="1690" y="0"/>
+</item>
+<item historyLabel="ConsumerProcess.cc" index="1">
+<position info="not_deleted" x="19185" y="0"/>
+</item>
+<item historyLabel="ConsumerProcess.cc" index="1">
+<position info="not_deleted" x="20108" y="0"/>
+</item>
+<item historyLabel="OwnerProcess.cc" index="2">
+<position info="not_deleted" x="5795" y="0"/>
+</item>
+<item historyLabel="ConsumerProcess.cc" index="1">
+<position info="not_deleted" x="20108" y="0"/>
+</item>
+<item historyLabel="ConsumerProcess.cc" index="1">
+<position info="not_deleted" x="17893" y="6"/>
+</item>
+<item historyLabel="ConsumerProcess.cc" index="1">
+<position info="not_deleted" x="4730" y="0"/>
+</item>
+<item historyLabel="ConsumerProcess.cc" index="1">
+<position info="not_deleted" x="10399" y="0"/>
+</item>
+<item historyLabel="OwnerProcess.cc" index="2">
+<position info="not_deleted" x="5795" y="0"/>
+</item>
+<item historyLabel="grs.cc" index="0">
+<position info="not_deleted" x="8184" y="0"/>
+</item>
+<item historyLabel="ConsumerProcess.cc" index="1">
+<position info="not_deleted" x="10399" y="0"/>
+</item>
+<item historyLabel="OwnerProcess.cc" index="2">
+<position info="not_deleted" x="5795" y="0"/>
+</item>
+<item historyLabel="OwnerProcess.cc" index="2">
+<position info="not_deleted" x="11172" y="0"/>
+</item>
+<item historyLabel="OwnerProcess.cc" index="2">
+<position info="not_deleted" x="11235" y="0"/>
+</item>
+<item historyLabel="OwnerProcess.cc" index="2">
+<position info="not_deleted" x="11235" y="0"/>
+</item>
+<item historyLabel="ConsumerProcess.cc" index="1">
+<position info="not_deleted" x="10399" y="0"/>
+</item>
+<item historyLabel="ConsumerProcess.cc" index="1">
+<position info="not_deleted" x="19331" y="0"/>
+</item>
+<item historyLabel="ConsumerProcess.cc" index="1">
+<position info="not_deleted" x="19989" y="0"/>
+</item>
+<item historyLabel="ConsumerProcess.cc" index="1">
+<position info="not_deleted" x="20029" y="0"/>
+</item>
+<item historyLabel="ConsumerProcess.cc" index="1">
+<position info="not_deleted" x="19926" y="0"/>
+</item>
+<item historyLabel="message_handle.cc" index="4">
+<position info="not_deleted" x="945" y="0"/>
+</item>
+<item historyLabel="ConsumerProcess.cc" index="1">
+<position info="not_deleted" x="19926" y="0"/>
+</item>
+<item historyLabel="message_handle.cc" index="4">
+<position info="not_deleted" x="890" y="53"/>
+</item>
+<item historyLabel="poly.cc" index="3">
+<position info="not_deleted" x="1690" y="0"/>
+</item>
+<item historyLabel="ConsumerProcess.cc" index="1">
+<position info="not_deleted" x="19926" y="0"/>
+</item>
+<item historyLabel="ConsumerProcess.cc" index="1">
+<position info="not_deleted" x="19926" y="0"/>
+</item>
+<item historyLabel="message_handle.cc" index="4">
+<position info="not_deleted" x="1169" y="0"/>
+</item>
+<item historyLabel="poly.cc" index="3">
+<position info="not_deleted" x="1690" y="0"/>
+</item>
+<item historyLabel="ConsumerProcess.cc" index="1">
+<position info="not_deleted" x="19889" y="37"/>
+</item>
+<item historyLabel="ConsumerProcess.cc" index="1">
+<position info="not_deleted" x="20108" y="0"/>
+</item>
+<item historyLabel="message_handle.cc" index="4">
+<position info="not_deleted" x="702" y="0"/>
+</item>
+<item historyLabel="OwnerProcess.cc" index="2">
+<position info="not_deleted" x="11237" y="0"/>
+</item>
+<item historyLabel="message_handle.cc" index="4">
+<position info="not_deleted" x="702" y="0"/>
+</item>
+<item historyLabel="ConsumerProcess.cc" index="1">
+<position info="not_deleted" x="18082" y="0"/>
+</item>
+<item historyLabel="OwnerProcess.cc" index="2">
+<position info="not_deleted" x="18931" y="0"/>
+</item>
+<item historyLabel="ConsumerProcess.cc" index="1">
+<position info="not_deleted" x="18082" y="0"/>
+</item>
+<item historyLabel="ConsumerProcess.cc" index="1">
+<position info="not_deleted" x="20108" y="0"/>
+</item>
+<item historyLabel="grs.cc" index="5">
+<position info="not_deleted" x="7687" y="0"/>
+</item>
+<item historyLabel="ConsumerProcess.cc" index="1">
+<position info="not_deleted" x="19936" y="0"/>
+</item>
+<item historyLabel="poly.cc" index="6">
+<position info="not_deleted" x="3113" y="0"/>
+</item>
+<item historyLabel="message_handle.cc" index="4">
+<position info="not_deleted" x="702" y="0"/>
+</item>
+<item historyLabel="ConsumerProcess.cc" index="1">
+<position info="not_deleted" x="19936" y="0"/>
+</item>
+<item historyLabel="grs.cc" index="5">
+<position info="not_deleted" x="7687" y="0"/>
+</item>
+<item historyLabel="poly.cc" index="6">
+<position info="not_deleted" x="3113" y="0"/>
+</item>
+<item historyLabel="poly.h" index="7">
+<position info="not_deleted" x="0" y="0"/>
+</item>
+<item historyLabel="poly.cc" index="6">
+<position info="not_deleted" x="4226" y="0"/>
+</item>
+<item active="true" historyLabel="OwnerProcess.cc" index="2">
+<position info="not_deleted" x="18931" y="0"/>
+</item>
+</navigationHistory>
+<input factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/" type="8"/>
+</page>
+<workbenchWindowAdvisor/>
+<actionBarAdvisor/>
+<trimLayout>
+<trimArea IMemento.internal.id="128">
+<trimItem IMemento.internal.id="org.eclipse.ui.internal.WorkbenchWindow.topBar"/>
+</trimArea>
+<trimArea IMemento.internal.id="1024">
+<trimItem IMemento.internal.id="org.eclise.ui.internal.FastViewBar"/>
+<trimItem IMemento.internal.id="org.eclipse.jface.action.StatusLineManager"/>
+<trimItem IMemento.internal.id="org.eclipse.ui.internal.progress.ProgressRegion"/>
+</trimArea>
+</trimLayout>
+</window>
+<mruList>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" name="poly.h" tooltip="ABEpro/poly.h">
+<persistable path="/ABEpro/poly.h"/>
+</file>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" name="poly.cc" tooltip="ABEpro/poly.cc">
+<persistable path="/ABEpro/poly.cc"/>
+</file>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" name="grs.cc" tooltip="ABEpro/grs.cc">
+<persistable path="/ABEpro/grs.cc"/>
+</file>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" name="message_handle.cc" tooltip="ABEpro/message_handle.cc">
+<persistable path="/ABEpro/message_handle.cc"/>
+</file>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" name="Owner.cc" tooltip="ABEpro/Owner.cc">
+<persistable path="/ABEpro/Owner.cc"/>
+</file>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" name="grs.h" tooltip="ABEpro/grs.h">
+<persistable path="/ABEpro/grs.h"/>
+</file>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" name="test.cpp" tooltip="ABEpro/test.cpp">
+<persistable path="/ABEpro/test.cpp"/>
+</file>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" name="test.c" tooltip="ABEpro/test.c">
+<persistable path="/ABEpro/test.c"/>
+</file>
+<file factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" name="cmodule.cc" tooltip="/home/s29zhu/researchproject/omnetpp-4.2.2/src/sim/cmodule.cc">
+<persistable uri="file:/home/s29zhu/researchproject/omnetpp-4.2.2/src/sim/cmodule.cc"/>
+</file>
+<file factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" name="ccomponent.h" tooltip="/home/s29zhu/researchproject/omnetpp-4.2.2/include/ccomponent.h">
+<persistable uri="file:/home/s29zhu/researchproject/omnetpp-4.2.2/include/ccomponent.h"/>
+</file>
+<file factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" name="pbc_field.h" tooltip="/usr/local/include/pbc/pbc_field.h">
+<persistable uri="file:/usr/local/include/pbc/pbc_field.h"/>
+</file>
+<file factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" name="main.cc" tooltip="/home/s29zhu/researchproject/omnetpp-4.2.2/src/envir/main.cc">
+<persistable uri="file:/home/s29zhu/researchproject/omnetpp-4.2.2/src/envir/main.cc"/>
+</file>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" name="ConsumerProcess.cc" tooltip="ABEpro/ConsumerProcess.cc">
+<persistable path="/ABEpro/ConsumerProcess.cc"/>
+</file>
+<file factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" name="cownedobject.h" tooltip="/home/s29zhu/researchproject/omnetpp-4.2.2/include/cownedobject.h">
+<persistable uri="file:/home/s29zhu/researchproject/omnetpp-4.2.2/include/cownedobject.h"/>
+</file>
+<file factoryID="org.eclipse.ui.ide.FileStoreEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" name="evmain.cc" tooltip="/home/s29zhu/researchproject/omnetpp-4.2.2/src/envir/evmain.cc">
+<persistable uri="file:/home/s29zhu/researchproject/omnetpp-4.2.2/src/envir/evmain.cc"/>
+</file>
+</mruList>
+</workbench>

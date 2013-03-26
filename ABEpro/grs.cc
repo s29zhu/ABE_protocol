@@ -118,6 +118,7 @@ void compare_shares(PotentialShares *header, PotentialShares *PS, PotentialShare
         tail = PS;
         tail->next = NULL;
     }
+//    cout<<"end of compairing code\n";
 }
 
 void initialize_shares(PotentialShares *PS, pairing_t pairing){
@@ -145,16 +146,20 @@ void get_px_value(element_t value, int x, int *c, element_t *shares, pairing_t p
     mpz_set_si(mpz_x, x);
     element_set_mpz(ele_x, mpz_x);
 
+//    cout<<"begining of get px values and x = "<<x<<endl;
+//    element_printf("value initial value = %B\n", value);
     for(i = 0; i < K; i++){
+        mpz_init(mpz_c[i]);
         element_init_Zr(ele_c[i], pairing);
         element_init_Zr(invert_c[i], pairing);
-        mpz_init(mpz_c[i]);
         mpz_set_si(mpz_c[i], c[i]);
         element_set_mpz(ele_c[i], mpz_c[i]);
-        element_invert(invert_c[K], ele_c[K]);
+//        element_printf("c[i] = %d, ele_c[%d] = %B\n", c[i], i, ele_c[i]);
+        element_neg(invert_c[i], ele_c[i]);
     }
+
     for(i = 0; i < N; i++){
-        element_init_Zr(temp_shares[i], pairing);
+        element_init_GT(temp_shares[i], pairing);
         element_set(temp_shares[i], shares[i]);
     }
 
@@ -173,9 +178,27 @@ void get_px_value(element_t value, int x, int *c, element_t *shares, pairing_t p
         //e(g,g)^(ra*qi(x))
         element_pow_zn(temp_shares[c[i] - 1], temp_shares[c[i] - 1], product);
     }
+
     element_set1(value);
-    for(i = 0; i < K; i++)
+    for(i = 0; i < K; i++){
+//        cout<<"c[i] - 1 = "<<c[i] - 1<<endl;
         element_mul(value, value, temp_shares[c[i] - 1]);
+    }
+//    element_printf("shares[%d] = %B\n", x - 1, value);
+    //memory clearance
+    mpz_clear(mpz_x);
+    element_clear(ele_x);
+    element_clear(product);
+    element_clear(sum);
+    for(i = 0; i < K; i++){
+        mpz_clear(mpz_c[i]);
+        element_clear(ele_c[i]);
+        element_clear(invert_c[i]);
+    }
+    for(i = 0; i < N; i++){
+        element_clear(temp_shares[i]);
+    }
+//    cout<<"end of get px values\n";
 }
 
 void  get_potential_shares(PotentialShares *p, element_t *shares, int *c, int *b, pairing_t pairing){
@@ -185,44 +208,77 @@ void  get_potential_shares(PotentialShares *p, element_t *shares, int *c, int *b
         element_set(p->shares[c[i] - 1], shares[c[i] - 1]);
     }
     for(i = 0; i < N - K; i++){//caculate p->shares[b[i] - 1]
-        get_px_value(p->shares[b[i] - 1], b[i] - 1, c, shares, pairing);
+        get_px_value(p->shares[b[i] - 1], b[i], c, shares, pairing);
     }
+//    cout<<"end of get potential shares\n";
 }
 
 void get_correct_shares(element_t *correct_shares, element_t *shares, pairing_t pairing){
-    int i, x, y, z, p[N+2], b[N - M];
-  int a[N] = {0};
-  int c[N] = {0};
-  PotentialShares *header = NULL, *p_new = NULL, *tail = NULL;
-  header = p_new;
-  inittwiddle(K, N, p);
-  //a[i] is full xi_array which contains N xi-s
-  for(i = 0; i < N; i++)
+    int i, x, y, z, p[N+2], b[N - K];
+    int a[N] = {0};
+    int c[N] = {0};
+    PotentialShares *header = NULL, *p_new = NULL, *tail = NULL;
+    p_new = new PotentialShares;
+    header = new PotentialShares;
+    tail = new PotentialShares;
+    tail = header;
+    tail->next = NULL;
+    inittwiddle(K, N, p);
+    //a[i] is full xi_array which contains N xi-s
+    for(i = 0; i < N; i++)
         a[i] = i + 1;
-  //c[i] is pairtial xi_array which contains K xi-s
-  for(i = N - K; i != N; i++){
+    //c[i] is pairtial xi_array which contains K xi-s
+    for(i = N - K; i != N; i++){
         c[i - N + K] = a[i];
-  }
-  //set the left over shares
-  for(i = 0; i < N - M; i++){
+    }
+    //set the left over shares
+    for(i = 0; i < N - K; i++){
         b[i] = a[i];
-  }
+    }
 
-  while(!twiddle(&x, &y, &z, p)){
-        for(i = 0; i < N - M; i++){
+    initialize_shares(p_new, pairing);
+    get_potential_shares(p_new, shares, c, b, pairing);
+    header = p_new;
+    tail = p_new;
+    tail->next = NULL;
+
+    while(!twiddle(&x, &y, &z, p)){
+        for(i = 0; i < N - K; i++){
             if(b[i] == a[x]){
-                b[i] = c[z];
+                b[i] = c[z];//before alternation, save c[z]
                 break;
             }
         }
         c[z] = a[x];//c[z]+1 are the xi-s
         p_new = new PotentialShares;
-        initialize_shares(p_new, pairing);//???doubt whether this is ok for memory allocation
+        initialize_shares(p_new, pairing);
+
         get_potential_shares(p_new, shares, c, b, pairing);
         compare_shares(header, p_new, tail);
-  }
-  //after the while loop, header should point to the node which contains correct shares
-  for(i = 0; i < N; i++)
-      element_set(correct_shares[i], header->shares[i]);
+    }
+    //after the while loop, header should point to the node which contains correct shares
+//    cout<<"counts of headers = "<<header->count<<endl;
+    for(i = 0; i < N; i++){
+        element_set(correct_shares[i], header->shares[i]);
+//        element_printf("%B\n", correct_shares[i]);
+    }
+
+    //release element_t memory
+    p_new = header;
+    while(p_new != NULL){
+        for(i = 0; i < N; i++){
+            element_clear(p_new->shares[i]);
+        }
+        p_new = p_new->next;
+    }
+    //release structure memory
+    p_new = header->next;
+    while(header != NULL){
+        delete header;
+        header = p_new;
+        if(header != NULL)
+            p_new = header->next;
+    }
+//    cout<<"end of getting correct shares\n";
 }
 

@@ -1,0 +1,201 @@
+#
+# OMNeT++/OMNEST Makefile for ABEpro
+#
+# This file was generated with the command:
+#  opp_makemake -f --deep -O out -I/usr/local/lib -L/usr/local/lib -lgmp -lpbc
+#
+
+# Name of target to be created (-o option)
+TARGET = ABEpro$(EXE_SUFFIX)
+
+# User interface (uncomment one) (-u option)
+USERIF_LIBS = $(ALL_ENV_LIBS) # that is, $(TKENV_LIBS) $(CMDENV_LIBS)
+#USERIF_LIBS = $(CMDENV_LIBS)
+#USERIF_LIBS = $(TKENV_LIBS)
+
+# C++ include paths (with -I)
+INCLUDE_PATH = \
+    -I/usr/local/lib \
+    -I. \
+    -Iauthority \
+    -Iauthorizer \
+    -Iconsumer \
+    -Iowner \
+    -Ipublic \
+    -Iresults \
+    -Iresults/CPU-30min \
+    -Iresults/Crypt \
+    -Iresults/SIM-500s \
+    -Iresults/nocrypt \
+    -Iresults/pkRate-500-1 \
+    -Iresults/pkRate-500-2 \
+    -Iresults/previous \
+    -Iresults/stack-7M
+
+# Additional object and library files to link with
+EXTRA_OBJS =
+
+# Additional libraries (-L, -l options)
+LIBS = -L/usr/local/lib  -lgmp -lpbc
+LIBS += -Wl,-rpath,  /usr/local/lib 
+
+# Output directory
+PROJECT_OUTPUT_DIR = out
+PROJECTRELATIVE_PATH =
+O = $(PROJECT_OUTPUT_DIR)/$(CONFIGNAME)/$(PROJECTRELATIVE_PATH)
+
+# Object files for local .cc and .msg files
+OBJS = \
+    $O/ResourceProcess.o \
+    $O/polynomial.o \
+    $O/Attribute.o \
+    $O/Owner.o \
+    $O/Consumer.o \
+    $O/generate_owner_keys.o \
+    $O/encryption.o \
+    $O/generate_authorizer_keys.o \
+    $O/galois.o \
+    $O/MasterProcess.o \
+    $O/ConsumerProcess.o \
+    $O/Resource.o \
+    $O/Master.o \
+    $O/Cloud.o \
+    $O/AttributeProcess.o \
+    $O/message_handle.o \
+    $O/UCACPacket_m.o
+
+# Message files
+MSGFILES = \
+    UCACPacket.msg
+
+#------------------------------------------------------------------------------
+
+# Pull in OMNeT++ configuration (Makefile.inc or configuser.vc)
+
+ifneq ("$(OMNETPP_CONFIGFILE)","")
+CONFIGFILE = $(OMNETPP_CONFIGFILE)
+else
+ifneq ("$(OMNETPP_ROOT)","")
+CONFIGFILE = $(OMNETPP_ROOT)/Makefile.inc
+else
+CONFIGFILE = $(shell opp_configfilepath)
+endif
+endif
+
+ifeq ("$(wildcard $(CONFIGFILE))","")
+$(error Config file '$(CONFIGFILE)' does not exist -- add the OMNeT++ bin directory to the path so that opp_configfilepath can be found, or set the OMNETPP_CONFIGFILE variable to point to Makefile.inc)
+endif
+
+include $(CONFIGFILE)
+
+# Simulation kernel and user interface libraries
+OMNETPP_LIB_SUBDIR = $(OMNETPP_LIB_DIR)/$(TOOLCHAIN_NAME)
+OMNETPP_LIBS = -L"$(OMNETPP_LIB_SUBDIR)" -L"$(OMNETPP_LIB_DIR)" -loppmain$D $(USERIF_LIBS) $(KERNEL_LIBS) $(SYS_LIBS)
+
+COPTS = $(CFLAGS)  $(INCLUDE_PATH) -I$(OMNETPP_INCL_DIR)
+MSGCOPTS = $(INCLUDE_PATH)
+
+# we want to recompile everything if COPTS changes,
+# so we store COPTS into $COPTS_FILE and have object
+# files depend on it (except when "make depend" was called)
+COPTS_FILE = $O/.last-copts
+ifneq ($(MAKECMDGOALS),depend)
+ifneq ("$(COPTS)","$(shell cat $(COPTS_FILE) 2>/dev/null || echo '')")
+$(shell $(MKPATH) "$O" && echo "$(COPTS)" >$(COPTS_FILE))
+endif
+endif
+
+#------------------------------------------------------------------------------
+# User-supplied makefile fragment(s)
+# >>>
+# <<<
+#------------------------------------------------------------------------------
+
+# Main target
+all: $O/$(TARGET)
+	$(LN) $O/$(TARGET) .
+
+$O/$(TARGET): $(OBJS)  $(wildcard $(EXTRA_OBJS)) Makefile
+	@$(MKPATH) $O
+	$(CXX) $(LDFLAGS) -o $O/$(TARGET)  $(OBJS) $(EXTRA_OBJS) $(AS_NEEDED_OFF) $(WHOLE_ARCHIVE_ON) $(LIBS) $(WHOLE_ARCHIVE_OFF) $(OMNETPP_LIBS)
+
+.PHONY: all clean cleanall depend msgheaders
+
+.SUFFIXES: .cc
+
+$O/%.o: %.cc $(COPTS_FILE)
+	@$(MKPATH) $(dir $@)
+	$(CXX) -c $(COPTS) -o $@ $<
+
+%_m.cc %_m.h: %.msg
+	$(MSGC) -s _m.cc $(MSGCOPTS) $?
+
+msgheaders: $(MSGFILES:.msg=_m.h)
+
+clean:
+	-rm -rf $O
+	-rm -f ABEpro ABEpro.exe libABEpro.so libABEpro.a libABEpro.dll libABEpro.dylib
+	-rm -f ./*_m.cc ./*_m.h
+	-rm -f authority/*_m.cc authority/*_m.h
+	-rm -f authorizer/*_m.cc authorizer/*_m.h
+	-rm -f consumer/*_m.cc consumer/*_m.h
+	-rm -f owner/*_m.cc owner/*_m.h
+	-rm -f public/*_m.cc public/*_m.h
+	-rm -f results/*_m.cc results/*_m.h
+	-rm -f results/CPU-30min/*_m.cc results/CPU-30min/*_m.h
+	-rm -f results/Crypt/*_m.cc results/Crypt/*_m.h
+	-rm -f results/SIM-500s/*_m.cc results/SIM-500s/*_m.h
+	-rm -f results/nocrypt/*_m.cc results/nocrypt/*_m.h
+	-rm -f results/pkRate-500-1/*_m.cc results/pkRate-500-1/*_m.h
+	-rm -f results/pkRate-500-2/*_m.cc results/pkRate-500-2/*_m.h
+	-rm -f results/previous/*_m.cc results/previous/*_m.h
+	-rm -f results/stack-7M/*_m.cc results/stack-7M/*_m.h
+
+cleanall: clean
+	-rm -rf $(PROJECT_OUTPUT_DIR)
+
+depend:
+	$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile -P\$$O/ -- $(MSG_CC_FILES)  ./*.cc authority/*.cc authorizer/*.cc consumer/*.cc owner/*.cc public/*.cc results/*.cc results/CPU-30min/*.cc results/Crypt/*.cc results/SIM-500s/*.cc results/nocrypt/*.cc results/pkRate-500-1/*.cc results/pkRate-500-2/*.cc results/previous/*.cc results/stack-7M/*.cc
+
+# DO NOT DELETE THIS LINE -- make depend depends on it.
+$O/Attribute.o: Attribute.cc \
+	UCACPacket_m.h
+$O/AttributeProcess.o: AttributeProcess.cc \
+	UCACPacket_m.h
+$O/Cloud.o: Cloud.cc \
+	UCACPacket_m.h
+$O/Consumer.o: Consumer.cc \
+	UCACPacket_m.h
+$O/ConsumerProcess.o: ConsumerProcess.cc \
+	UCACPacket_m.h
+$O/Master.o: Master.cc \
+	UCACPacket_m.h
+$O/MasterProcess.o: MasterProcess.cc \
+	UCACPacket_m.h
+$O/Owner.o: Owner.cc \
+	UCACPacket_m.h \
+	galois.h \
+	generate_owner_keys.h \
+	grs.h \
+	message_handle.h
+$O/Resource.o: Resource.cc \
+	UCACPacket_m.h
+$O/ResourceProcess.o: ResourceProcess.cc \
+	UCACPacket_m.h
+$O/UCACPacket_m.o: UCACPacket_m.cc \
+	UCACPacket_m.h
+$O/encryption.o: encryption.cc \
+	grs.h \
+	message_handle.h
+$O/galois.o: galois.cc \
+	galois.h
+$O/generate_authorizer_keys.o: generate_authorizer_keys.cc
+$O/generate_owner_keys.o: generate_owner_keys.cc \
+	generate_owner_keys.h
+$O/message_handle.o: message_handle.cc \
+	message_handle.h
+$O/polynomial.o: polynomial.cc \
+	galois.h \
+	grs.h \
+	polynomial.h
+

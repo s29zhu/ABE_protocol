@@ -13,7 +13,7 @@ void get_poly_value(element_t y, element_t *poly, element_t x, element_t x_temp,
     mpz_t i_mpz;
     mpz_init(i_mpz);
     element_set0(y);
-    element_printf("element x = %B\n", x);
+    //element_printf("element x = %B\n", x);
     if(element_is0(x)){
         element_set(y, poly[0]);
     }else if(element_is1(x)){//something wrong with x = 1 case, debugging here, should delete this later
@@ -30,7 +30,7 @@ void get_poly_value(element_t y, element_t *poly, element_t x, element_t x_temp,
             element_add(y, y, x_temp);
         }
     }
-    element_printf("value of the poly = %B\n", y);
+    //element_printf("value of the poly = %B\n", y);
 }
 
 //get (x+x0)(x+x1)...(x+x6)
@@ -94,11 +94,11 @@ void get_px(element_t *px,//output of the function, final polynamial p(x)
     }
     //element_set0(divisor);//x = 1
     //get_poly_value(yi_array[1], poly, divisor, temp_div, length_of_xi_array);
-    printf("The overall polynomial Px is: \n");
-    for(i = 0; i < length_of_xi_array; i++){
-        element_printf("%B  ", px[i]);
-    }
-    printf("\n");
+//    printf("The overall polynomial Px is: \n");
+//    for(i = 0; i < length_of_xi_array; i++){
+//        element_printf("%B  ", px[i]);
+//    }
+//    printf("\n");
 }
 
 void get_formal_derivation(element_t *poly, element_t *derivative, int poly_length){

@@ -1,0 +1,290 @@
+/*
+ * MasterProcess.cc
+ *
+ *  Created on: Mar 8, 2013
+ *      Author: s29zhu
+ */
+
+#include "UCACPacket_m.h"
+#include "pbc/pbc.h"
+#include "time.h"
+
+class MasterProcess : public cSimpleModule
+{
+  private:
+    UCACRedirectPacket *msg_temp;
+    pairing_t pairing;
+    element_t g, h, f, beta, nounce;
+    UCACTokenPacket *token_packet;
+    bool attr_received;
+    char *attr[NUM_SHARE];
+    Token *sk_token;
+    int consumerAddr;
+    int masterAddr;
+    int attributeAddr;
+    int resourceAddr;
+    int ownerAddr;
+  public:
+    MasterProcess() : cSimpleModule(0) {}
+    virtual void handleMessage(cMessage *msg);
+    virtual void initialize();
+};
+
+Define_Module( MasterProcess );
+
+void MasterProcess::initialize(){
+    EV<<"inside master process\n";
+    element_init_Zr(nounce, pairing);
+    msg_temp = new UCACRedirectPacket("", REDIRECT);
+    attr_received = false;
+    int i = 0;
+    for(i = 0; i < NUM_SHARE; i++){
+        attr[i] = (char *)malloc(sizeof(char)*256);
+    }
+    cModule *parentMod = getParentModule();
+    cGate *parentOutGate = parentMod->gate("port$o");
+    // assign server address: index of Switch's gate to which severs are connected
+    int maxIndex = parentOutGate->getNextGate()->size()-1;
+    consumerAddr = maxIndex-3; WATCH(consumerAddr);
+    masterAddr = maxIndex-2; WATCH(masterAddr);
+    attributeAddr = maxIndex-1; WATCH(attributeAddr);
+    resourceAddr = maxIndex; WATCH(resourceAddr);
+    sk_token = new Token();
+    token_packet = NULL;
+/*    cMessage *starter = new cMessage("authorizer start message", 100);
+    simtime_t current_time = simTime();
+    scheduleAt(current_time + 0.01, starter);*/
+
+    element_t  beta_inverse;
+    /*generate private and public keys of owner*/
+    char s[16384];
+    char *str_read, *str1;
+   //signed long int temp_share;
+    FILE *fp = stdin;
+
+    fp = fopen("public/a.param", "r");
+    if (!fp)
+        pbc_die("error opening parameter file");
+    size_t count = fread(s, 1, 16384, fp);
+    if(!count)
+        pbc_die("read parameter failure\n");
+    fclose(fp);
+    if(pairing_init_set_buf(pairing, s, count))
+        pbc_die("pairing init failed\n");
+    if(!pairing_is_symmetric(pairing)) pbc_die("pairing is not symmetric\n");
+
+    element_init_G1(g, pairing);
+    element_init_G1(h, pairing);
+    element_init_G1(f, pairing);
+    element_init_Zr(beta, pairing);
+    element_init_Zr(beta_inverse, pairing);
+
+    str_read = (char *)malloc(sizeof(char)*500);
+    str1 = (char *)malloc(sizeof(char)*6);
+    //(G1, g, h, f) is the public key of authorizer
+    //find the generator of the group
+//    element_set(g, (*(curve_data_ptr) (*(*(a_pairing_data_ptr) (*pairing).data).Eq).data).gen);
+    char str_g[512] = "[2080247391869362085132539778201998483380874841515454429046327131439543677740031077799512395854029182308535916504326748475626106457866048357583741668275635, 3462536684798900385254814488714127044393463459789164641468572493723203953888500069097792605858951898418781245583533869595156169194014075269175495278137832]";
+    element_set_str(g, str_g, 10);
+
+    fp = fopen("authorizer/authorizer_secret_key.txt", "r");
+    //read the secret key beta
+     if(!fp)
+         pbc_die("open authorizer secret key file failed");
+     else{
+         while(true){
+             fgets(str_read, 500, fp);
+             if(strstr(str_read, "beta:"))
+                 break;
+         }
+         element_set_str(beta, str_read + 5, 10);
+         fclose(fp);
+     }
+     //free and allocte memory again to avoid the effect of previous data
+     free(str_read);
+     free(str1);
+     str_read = (char *)malloc(sizeof(char)*500);
+     str1 = (char *)malloc(sizeof(char)*500);
+     fp = fopen("public/authorizer_public_keys.txt", "r");
+     if(!fp)
+         pbc_die("open authorizer public key file failed");
+     else{
+         while(true){
+             fgets(str_read, 500, fp);
+            // strncpy(str1, str_read, 2);
+             if(strstr(str_read, "h:")){
+                 fgets(str1, 500, fp);
+                 strcat(str_read, str1);
+               // printf("%s\n", str_read);
+                 break;
+             }
+         }
+         element_set_str(h, str_read + 2, 10);
+         //free and allocte memory again to avoid the effect of previous data
+         free(str_read);
+         free(str1);
+         str_read = (char *)malloc(sizeof(char)*500);
+         str1 = (char *)malloc(sizeof(char)*500);
+         while(true){
+             fgets(str_read, 500, fp);
+           //  strncpy(str1, str_read, 2);
+             if(strstr(str_read, "f:")){
+                 fgets(str1, 500, fp);
+                 strcat(str_read, str1);
+               // printf("%s\n", str_read);
+                 break;
+             }
+         }
+         element_set_str(f, str_read + 2, 10);
+         fclose(fp);
+     }
+}
+
+void MasterProcess::handleMessage(cMessage *msg)
+{
+    UCACPacket *m = check_and_cast<UCACPacket *>(msg);
+    // retrieve parent's parameters
+    cModule *parentMod = getParentModule();
+    //simtime_t timeout = parentMod->par("timeout");
+    cPar& conf1CompTime = parentMod->par("conf1Time");
+    cPar& conf2CompTime = parentMod->par("conf2Time");
+
+    // retrieve parent's out gate
+    cGate *parentOutGate = parentMod->gate("port$o");
+    // assign myself address and process ID
+    int myAddr = masterAddr; WATCH(myAddr);
+    int myProcId = getId(); WATCH(myProcId);
+
+    // information connection for client side
+    int clientAddr = 0; WATCH(clientAddr);
+    //int clientProcId = 0; WATCH(clientProcId);
+
+    // information connection for server side
+    int attributeProcId = 0; WATCH(attributeProcId);
+
+    for(;;){
+        if(m->isSelfMessage()){
+            EV<<"master process caught selfmessage\n";
+            delete m;
+            break;
+        }
+        //received the connection request message from owner along with consumer's redirecting packet
+        if(m->getKind() == CONN_REQ && m->getSrcAddress() == ownerAddr){
+            msg_temp = check_and_cast<UCACRedirectPacket *>(msg);
+            UCACPacket *res = new UCACPacket("master process response ack to owner", CONN_REQ);
+            res->setSrcAddress(masterAddr);
+            res->setDestAddress(ownerAddr);
+            res->setSrcProcId(getId());
+            sendDirect(res, parentOutGate);
+            UCACPacket *conn = new UCACPacket("connect request from master to authority", CONN_REQ);
+            conn->setSrcAddress(masterAddr);
+            conn->setDestAddress(attributeAddr);
+            conn->setSrcProcId(getId());
+            sendDirect(conn, parentOutGate);
+            break;
+        }
+
+        //send descriptive attribute to authority
+        if(m->getKind() == CONN_ACK && m->getSrcAddress() == attributeAddr){
+            UCACRedirectDesPacket *redirect_packet = new UCACRedirectDesPacket("request DES part1 from authority", DES1_REQ);
+            element_random(nounce);
+            redirect_packet->setID(msg_temp->getID());
+            redirect_packet->setRedirect_URI(msg_temp->getRedirect_URI());
+            redirect_packet->setNounce(nounce[0]);
+            redirect_packet->setSrcAddress(masterAddr);
+            redirect_packet->setDestAddress(attributeAddr);
+            redirect_packet->setSrcProcId(getId());
+            redirect_packet->setDestProcId(m->getSrcProcId());
+            sendDirect(redirect_packet, parentOutGate);
+            break;
+        }
+        if(m->getKind() == AUTN_REQ){
+            UCACAuthenticatePacket *m_final = check_and_cast<UCACAuthenticatePacket *>(msg);
+            EV<<m_final->getID();
+            m_final->getCredential();
+            //do some work and check whether these information are correct
+            //if correct then send back the following packet
+            UCACPacket *auth_success = new UCACPacket("authenticated successful", AUTN_RES);
+            auth_success->setSrcAddress(masterAddr);
+            auth_success->setDestAddress(m_final->getSrcAddress());
+            auth_success->setSrcProcId(myProcId);
+            auth_success->setDestProcId(m->getSrcProcId());
+            sendDirect(auth_success, parentOutGate);
+            break;
+        }
+        //send part of token to owner
+        if(m->getKind() == CONFINED_D_REQ){
+           //wait for the authority to send the descriptive part, and the token_packet is received
+           while(token_packet == NULL){
+               //do nothing but waiting here, untill authority send authorizer the partial descriptive attribute result
+           }
+           token_packet->setSrcAddress(masterAddr);
+           token_packet->setDestAddress(ownerAddr);
+           token_packet->setSrcProcId(getId());
+           token_packet->setDestProcId(m->getSrcProcId());
+           token_packet->setKind(CONFINED_D_RES);
+           UCACAttrPacket  *attr_packet = check_and_cast<UCACAttrPacket *>(msg);
+           int i = 0;
+           element_t temp_ele_G1, ri, d, r;
+           element_init_G1(temp_ele_G1, pairing);
+           element_init_G1(d, pairing);
+           element_init_Zr(ri, pairing);
+           element_init_Zr(r, pairing);
+           for(i = 0; i < NUM_SHARE; i++){
+               strcpy(attr[i], attr_packet->getAttr(i));
+               element_random(ri);
+               element_from_hash(temp_ele_G1, (void *)attr[i], 256);
+               sk_token->Di[i][0] = temp_ele_G1[0];
+               element_pow_zn(sk_token->Di[i], sk_token->Di[i], ri);
+               element_pow_zn(temp_ele_G1, g, ri);
+               sk_token->Di_prime[i][0] = temp_ele_G1[0];
+           }
+           //set the decriptive part to 0 and save it to the consumer to request from authority
+           element_init_G1(sk_token->Di_prime[6], pairing);
+           element_init_G1(sk_token->Di[6], pairing);
+           //set the first part of descriptive attribute
+           sk_token->Di[6][0] = token_packet->getSk_token().Di[6][0];
+           //compute the premature D<---g^r
+           element_random(r);
+           element_pow_zn(d, g, r);
+           sk_token->D[0] = d[0];
+           token_packet->setSk_token(*sk_token);
+           sendDirect(token_packet, parentOutGate);
+           attr_received = true;
+           break;
+        }
+        if(m->getKind() == DES1_RES && m->getSrcAddress() == attributeAddr){
+            //make a copy of the received message
+            token_packet = check_and_cast<UCACTokenPacket *>(msg)->dup();
+            UCACPacket *res = new UCACPacket("received descriptive part", DES1_RES);
+            res->setSrcAddress(masterAddr);
+            res->setDestAddress(attributeAddr);
+            res->setDestProcId(m->getSrcProcId());
+            res->setSrcProcId(getId());
+            sendDirect(res, parentOutGate);
+            delete m;
+            break;
+        }
+        //interact with owner about the D part in the token
+        if(m->getKind() == D_REQ){
+            token_packet = check_and_cast<UCACTokenPacket *>(msg);
+            sk_token->D[0] = token_packet->getSk_token().D[0];
+            element_t beta_inverse;
+            element_init_Zr(beta_inverse, pairing);
+            element_invert(beta_inverse, beta);
+            element_pow_zn(sk_token->D, sk_token->D, beta_inverse);
+            element_clear(beta_inverse);
+            token_packet->setSrcAddress(masterAddr);
+            token_packet->setDestAddress(ownerAddr);
+            token_packet->setSrcProcId(getId());
+            token_packet->setDestProcId(m->getSrcProcId());
+            token_packet->setKind(D_RES);
+            token_packet->setSk_token(*sk_token);
+            token_packet->setNounce(nounce[0]);
+            sendDirect(token_packet, parentOutGate);
+            break;
+        }
+        break;
+    }
+}
+

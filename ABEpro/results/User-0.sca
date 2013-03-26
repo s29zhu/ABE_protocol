@@ -1,14 +1,14 @@
 version 2
-run User-0-20130322-23:05:03-12280
+run User-0-20130325-21:44:09-10876
 attr configname User
-attr datetime 20130322-23:05:03
+attr datetime 20130325-21:44:09
 attr experiment User
 attr inifile omnetpp.ini
 attr iterationvars ""
 attr iterationvars2 $repetition=0
 attr measurement ""
 attr network UCACnet
-attr processid 12280
+attr processid 10876
 attr repetition 0
 attr replication #0
 attr resultdir results

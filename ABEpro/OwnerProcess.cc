@@ -218,7 +218,7 @@ void OwnerProcess::initialize(){
         mpz_set_si(temp, i);
         element_set_mpz(xi_array[i], temp);
     }
-    cout<<"before interpolation\n";
+//    cout<<"before interpolation\n";
     get_px(px,//element_t *
             poly,//element_t *
             pre_poly,//element_t *
@@ -229,8 +229,8 @@ void OwnerProcess::initialize(){
             THRESH_HOLD,//int
             divisor,//element_t
             temp_div);//element_t
-    cout<<"finish interpolation\n";
-    cout<<"check the poly\n";
+//    cout<<"finish interpolation\n";
+//    cout<<"check the poly\n";
     for(i = 0; i < THRESH_HOLD; i++){
         get_poly_value(qR[i], px, xi_array[i], x_temp, THRESH_HOLD);
     //    element_printf("%B \n", qR[i]);
@@ -323,6 +323,8 @@ void OwnerProcess::initialize(){
            strcat(str_read, m);
            strcat(str_read, ",0]");
            element_set_str(message_ele, str_read, 10);
+           element_printf("in owner, message = %B\n", message_ele);
+           element_printf("in owner, secret = %B\n", C_tilde);
            //multiply it by e(g,g)^(alpha*s) to get the real C_tilde
            element_mul(C_tilde, C_tilde, message_ele);
            //write the encrypted data to file
@@ -493,16 +495,16 @@ void OwnerProcess::handleMessage(cMessage *msg)
            element_init_G1(g_pow_qR, pairing);
 
            //print out these values for debuging
-           printf("owner shares\n");
+//           printf("owner shares\n");
            for(i = 0; i < NUM_CONFINE; i++){
                element_pow_zn(g_pow_qR, g, qR[i + 1]);
                element_pairing(pairing_result, g_pow_ra, g_pow_qR);
-               element_printf("%B\n", pairing_result);
+//               element_printf("%B\n", pairing_result);
            }
            for(i = NUM_CONFINE; i < NUM_SHARE; i++){
                element_pow_zn(g_pow_qR, g, qR[i + 2]);
                element_pairing(pairing_result, g_pow_ra, g_pow_qR);
-               element_printf("%B\n", pairing_result);
+//               element_printf("%B\n", pairing_result);
            }
 
            //element_printf("secret_key = %B\nD = %B\n", secret_key, token_packet->getSk_token().D);

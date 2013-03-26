@@ -1,0 +1,44 @@
+#include "UCACPacket_m.h"
+#include "pbc/pbc.h"
+#include <iostream>
+#include <cstring>
+using namespace std;
+class Consumer : public cSimpleModule
+{
+  private:
+    cModuleType *srvProcType;
+    pairing_t pairing;
+    element_t g, h, f, owner_pub;
+  protected:
+    virtual void initialize();
+    virtual void handleMessage(cMessage *msg);
+};
+
+Define_Module(Consumer);
+
+
+void Consumer::initialize()
+{
+
+}
+
+void Consumer::handleMessage(cMessage *msg)
+{
+    UCACPacket *m = check_and_cast<UCACPacket *>(msg);
+    if(m->isSelfMessage()){
+        EV<<"owner caught selfmessage\n";
+        delete msg;
+    } else{
+        // otherwise the process has already created, so redirect to that process.
+        int serverProcId = m->getDestProcId();
+        EV << "Consumer is redirecting msg to process ID = " << serverProcId << endl;
+        cModule *mod = simulation.getModule(serverProcId);
+        // unless cannot find the destination process, destroy the packet
+        if (!mod) {
+            EV << " That process already exited, deleting msg\n";
+            delete m;
+        } else {
+            sendDirect(m, mod, "in");
+        }
+    }
+}

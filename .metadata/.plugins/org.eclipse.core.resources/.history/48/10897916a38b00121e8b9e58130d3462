@@ -1,0 +1,61 @@
+/*
+ * ResourceProcess.cc
+ *
+ *  Created on: Aug 23, 2011
+ *      Author: anuchart
+ */
+
+#include "UCACPacket_m.h"
+
+
+class ResourceProcess : public cSimpleModule
+{
+  public:
+    ResourceProcess() : cSimpleModule(0) {}
+    virtual void initialize();
+    virtual void handleMessage(cMessage *msg);
+};
+
+Define_Module( ResourceProcess );
+void ResourceProcess::initialize(){
+
+}
+void ResourceProcess::handleMessage(cMessage *msg)
+{
+    // retrieve parent's parameters
+	cModule *parentMod = getParentModule();
+    cPar& challCompTime = parentMod->par("challTime");
+    cPar& processingTime = parentMod->par("processingTime");
+    UCACPacket *m = check_and_cast<UCACPacket *>(msg);
+    // retrieve parent's out gate
+    cGate *parentOutGate = parentMod->gate("port$o");
+
+    // assign server address: index of Switch's gate to which servers are connected
+    int maxIndex = parentOutGate->getNextGate()->size()-1;
+    int consumerAddr = maxIndex-3; WATCH(consumerAddr);
+    int masterAddr = maxIndex-2; WATCH(masterAddr);
+    int attributeAddr = maxIndex-1; WATCH(attributeAddr);
+    int resourceAddr = maxIndex; WATCH(resourceAddr);
+
+    // assign myself address and process ID
+    int myAddr = resourceAddr; WATCH(myAddr);
+    int myProcId = getId(); WATCH(myProcId);
+
+    // connection information for client side
+    int clientAddr = 0; WATCH(clientAddr);
+    int clientProcId=0; WATCH(clientProcId);
+
+    int type; WATCH(type);
+    for(;;){
+        if(m->getKind() == CONN_REQ){
+            UCACPacket *res = m;
+            res->setKind(CONN_ACK);
+            res->setSrcAddress(resourceAddr);
+            res->setDestAddress(m->getSrcAddress());
+            res->setSrcProcId(getId());
+            res->setDestProcId(m->getSrcProcId());
+            send(res, parentOutGate);
+            break;
+        }
+    }
+}
